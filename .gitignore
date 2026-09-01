@@ -1,0 +1,39 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# build and runtime artifacts
+dist/
+coverage/
+.logs/
+
+# local environment and secrets
+.env
+.env.*
+!.env.example
+
+# local tooling
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# Claude Code local settings (may contain secrets in permitted commands)
+.claude/settings.local.json
+
+node_modules
+.next
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage
+dist
+.logs
+
+contracts/out/

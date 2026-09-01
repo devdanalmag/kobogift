@@ -1,0 +1,93 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import type { OnChainStats } from "@/lib/server/on-chain-stats";
+
+function formatUsdcStat(raw: string): string {
+  const n = parseFloat(raw);
+  if (n >= 1000) return `$${(n / 1000).toFixed(1)}K+`;
+  return `$${Math.round(n)}+`;
+}
+
+function StatNum({ value }: { value: string }) {
+  const [flash, setFlash] = useState(false);
+  const prev = useRef(value);
+
+  useEffect(() => {
+    if (prev.current !== value) {
+      prev.current = value;
+      setFlash(true);
+      const t = setTimeout(() => setFlash(false), 500);
+      return () => clearTimeout(t);
+    }
+  }, [value]);
+
+  return (
+    <span
+      className="landing-stat-num"
+      style={{
+        transition: "opacity 0.3s, transform 0.3s",
+        opacity: flash ? 0.5 : 1,
+        transform: flash ? "scale(1.08)" : "scale(1)",
+      }}
+    >
+      {value}
+    </span>
+  );
+}
+
+export default function LiveStats({ initial }: { initial: OnChainStats }) {
+  // Never go below the SSR floor values — ignore API responses returning zeros.
+  // Floor resets after 5 minutes so a testnet reset is eventually reflected.
+  const floor = useRef(initial);
+  const floorSetAt = useRef<number | null>(null);
+  const [stats, setStats] = useState(initial);
+
+  useEffect(() => {
+    const FLOOR_TTL_MS = 5 * 60 * 1000;
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/stats");
+        if (!res.ok) return;
+        const raw = (await res.json()) as
+          | OnChainStats
+          | { onChain?: OnChainStats };
+        const data: OnChainStats =
+          "onChain" in raw && raw.onChain ? raw.onChain : (raw as OnChainStats);
+        if (!Number.isFinite(data.totalClaimed)) return;
+        const now = Date.now();
+        const floorExpired = floorSetAt.current !== null && now - floorSetAt.current > FLOOR_TTL_MS;
+        if (
+          floorExpired ||
+          (data.totalClaimed >= floor.current.totalClaimed &&
+            parseFloat(data.totalUsdcClaimed) >= parseFloat(floor.current.totalUsdcClaimed))
+        ) {
+          floor.current = data;
+          floorSetAt.current = now;
+          setStats(data);
+        }
+      } catch { /* ignore network errors */ }
+    };
+
+    void fetchStats();
+    const id = setInterval(() => void fetchStats(), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const claimedDisplay = `${stats.totalClaimed.toLocaleString("en-US")}+`;
+  const usdcDisplay = formatUsdcStat(stats.totalUsdcClaimed);
+
+  return (
+    <>
+      <div>
+        <StatNum value={claimedDisplay} />
+        <span className="landing-stat-label">Gifts claimed</span>
+      </div>
+      <div className="landing-stat-divider" aria-hidden />
+      <div>
+        <StatNum value={usdcDisplay} />
+        <span className="landing-stat-label">USDC gifted</span>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,92 @@
+import { ImageResponse } from "next/og";
+import { LOGO_MARK_DATA_URI } from "@/lib/brand-logo";
+
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+
+export default function OgImage() {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          display: "flex",
+          width: 1200,
+          height: 630,
+          background: "#0a0a0f",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 80,
+          padding: "0 100px",
+        }}
+      >
+        {/* Icon */}
+        <div
+          style={{
+            display: "flex",
+            width: 240,
+            height: 240,
+            borderRadius: 56,
+            flexShrink: 0,
+            boxShadow: "0 32px 80px rgba(35,181,110,0.35)",
+            overflow: "hidden",
+          }}
+        >
+          <img src={LOGO_MARK_DATA_URI} width={240} height={240} alt="" />
+        </div>
+
+        {/* Text */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              fontSize: 96,
+              fontWeight: 800,
+              letterSpacing: "-4px",
+              lineHeight: 1,
+            }}
+          >
+            <span style={{ color: "#ffffff" }}>Kobo</span>
+            <span style={{ color: "#10B981" }}>Gift</span>
+          </div>
+          <div
+            style={{
+              fontSize: 36,
+              color: "#8888a0",
+              letterSpacing: "-0.5px",
+              lineHeight: 1.4,
+            }}
+          >
+            Send crypto like a message.
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginTop: 8,
+            }}
+          >
+            <div
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                background: "#23B56E",
+              }}
+            />
+            <span style={{ fontSize: 22, color: "#555566", letterSpacing: "0.02em" }}>
+              Arc Testnet · Gasless USDC · Circle Wallets
+            </span>
+          </div>
+        </div>
+      </div>
+    ),
+    { ...size },
+  );
+}

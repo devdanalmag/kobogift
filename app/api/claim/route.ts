@@ -1,0 +1,137 @@
+import { NextResponse } from "next/server";
+import { parseClaimInput } from "@/entities/claim/server/claim-validation";
+import { getClientIp, submitClaim } from "@/entities/claim/server/claim-service";
+import { claimAuditStore } from "@/lib/server/claim-audit-store";
+import { HttpError, errorMessage } from "@/lib/server/http-errors";
+import { giftMetadataStore } from "@/lib/server/gift-metadata-store";
+import { sendGiftClaimedEmail } from "@/lib/server/email";
+
+export const runtime = "nodejs";
+
+type ClaimErrorCode =
+  | "BAD_REQUEST"
+  | "CONFIG_ERROR"
+  | "RATE_LIMITED"
+  | "IN_PROGRESS"
+  | "RELAY_ERROR";
+
+type ClaimErrorResponse = {
+  ok: false;
+  error: {
+    code: ClaimErrorCode;
+    message: string;
+    retryable: boolean;
+  };
+};
+
+type ClaimSuccessResponse = {
+  ok: true;
+  txHash: string;
+  cached?: boolean;
+};
+
+function jsonError(
+  code: ClaimErrorCode,
+  message: string,
+  status: number,
+  retryable = false
+) {
+  const payload: ClaimErrorResponse = {
+    ok: false,
+    error: { code, message, retryable },
+  };
+  return payload;
+}
+
+export async function POST(request: Request) {
+  let currentIdempotencyKey: string | null = null;
+  let currentPaymentIdHash: string | null = null;
+  const requestId = crypto.randomUUID();
+  const clientIp = getClientIp(request);
+
+  try {
+    await claimAuditStore.write({
+      requestId,
+      timestamp: new Date().toISOString(),
+      event: "claim_received",
+      ip: clientIp,
+    });
+
+    let rawBody: unknown;
+    try {
+      rawBody = await request.json();
+    } catch {
+      throw new HttpError(400, "Invalid JSON body.", {
+        code: "BAD_REQUEST",
+        retryable: false,
+      });
+    }
+
+    const input = parseClaimInput(rawBody);
+    currentPaymentIdHash = input.paymentIdHash;
+    // Always derive the idempotency key from claim inputs — never accept a
+    // caller-supplied key, which could be used to pre-occupy another user's
+    // idempotency slot and cause their claim to return a wrong txHash.
+    const idempotencyKey = null;
+    currentIdempotencyKey = idempotencyKey;
+    const result = await submitClaim({
+      input,
+      requestId,
+      clientIp,
+      explicitIdempotencyKey: idempotencyKey,
+    });
+    currentIdempotencyKey = result.idempotencyKey;
+
+    if (!result.cached) {
+      void giftMetadataStore
+        .get(input.paymentIdHash)
+        .then((meta) => {
+          if (meta?.senderEmail) {
+            return sendGiftClaimedEmail({
+              to: meta.senderEmail,
+              senderDisplayName: meta.senderDisplayName,
+              amountUsdc: meta.amountUsdc,
+            });
+          }
+        })
+        .catch((err: unknown) => {
+          console.error(
+            JSON.stringify({
+              event: "claim_email_error",
+              message: err instanceof Error ? err.message : "unknown",
+            })
+          );
+        });
+    }
+
+    const response: ClaimSuccessResponse = { ok: true, txHash: result.txHash };
+    if (result.cached) response.cached = true;
+    return NextResponse.json(response, {
+      headers: { "X-Idempotency-Key": result.idempotencyKey },
+    });
+  } catch (error) {
+    const message = errorMessage(error, "Failed to submit claim.");
+    let status = 500;
+    let code: ClaimErrorCode = "RELAY_ERROR";
+    let retryable = true;
+    if (error instanceof HttpError) {
+      status = error.status;
+      code = (error.code as ClaimErrorCode | undefined) ?? "RELAY_ERROR";
+      retryable = error.retryable;
+    }
+    await claimAuditStore.write({
+      requestId,
+      timestamp: new Date().toISOString(),
+      event: "claim_error",
+      ip: clientIp,
+      idempotencyKey: currentIdempotencyKey?.slice(0, 10),
+      paymentIdHash: currentPaymentIdHash ?? undefined,
+      errorCode: code,
+      message,
+    });
+    const payload = jsonError(code, message, status, retryable);
+    const headers =
+      status === 429 ? { "Retry-After": "1" } : undefined;
+    return NextResponse.json(payload, { status, headers });
+  }
+}

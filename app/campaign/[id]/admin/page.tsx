@@ -112,9 +112,9 @@ export default function CampaignAdminPage({ params }: { params: Promise<{ id: st
               {/* Stats */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Claimed", value: data.claims.length, color: "text-emerald-400" },
+                  { label: "Claimed", value: data.claims.length, color: "text-orange-400" },
                   { label: "Remaining", value: data.campaign.totalGifts - data.claims.length, color: "text-white/75" },
-                  { label: "Total USDC", value: `${(data.claims.length * parseFloat(data.campaign.amountPerGift)).toFixed(2)}`, color: "text-emerald-400" },
+                  { label: "Total USDC", value: `${(data.claims.length * parseFloat(data.campaign.amountPerGift)).toFixed(2)}`, color: "text-orange-400" },
                 ].map((s) => (
                   <div key={s.label} className="rounded-xl border border-white/8 bg-white/4 px-3 py-3 text-center">
                     <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
@@ -166,7 +166,7 @@ export default function CampaignAdminPage({ params }: { params: Promise<{ id: st
                               <p className="text-xs text-white/25 mt-0.5">{formatDate(c.claimedAt)}</p>
                             </div>
                             <div className="shrink-0 text-right">
-                              <p className="text-sm font-medium text-emerald-400">{data.campaign.amountPerGift} USDC ✓</p>
+                              <p className="text-sm font-medium text-orange-400">{data.campaign.amountPerGift} USDC ✓</p>
                             </div>
                           </div>
                         </motion.div>

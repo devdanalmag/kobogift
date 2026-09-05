@@ -150,7 +150,7 @@ export default function CampaignClaimPage({ params }: { params: Promise<{ id: st
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPct}%` }}
-                    className="h-full rounded-full bg-emerald-500"
+                    className="h-full rounded-full bg-orange-500"
                   />
                 </div>
               </div>
@@ -168,13 +168,13 @@ export default function CampaignClaimPage({ params }: { params: Promise<{ id: st
                   <p className="text-sm text-white/60">All gifts have been claimed.</p>
                 </div>
               ) : step === "already_claimed" ? (
-                <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 py-6 text-center">
+                <div className="rounded-xl border border-orange-500/25 bg-orange-950/20 py-6 text-center">
                   <p className="text-2xl mb-2">✓</p>
-                  <p className="text-sm text-emerald-400">You already claimed a gift from this campaign.</p>
+                  <p className="text-sm text-orange-400">You already claimed a gift from this campaign.</p>
                 </div>
               ) : step === "success" ? (
                 <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4 text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-emerald-500/50 bg-emerald-950/80 text-2xl">✓</div>
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-orange-500/50 bg-orange-950/80 text-2xl">✓</div>
                   <div>
                     <p className="font-semibold text-white/90">{info.campaign.amountPerGift} USDC claimed!</p>
                     <p className="text-sm text-white/50 mt-0.5">The USDC is now in your wallet.</p>
@@ -186,7 +186,7 @@ export default function CampaignClaimPage({ params }: { params: Promise<{ id: st
                 </motion.div>
               ) : step === "claiming" ? (
                 <div className="flex flex-col items-center gap-3 py-4">
-                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-emerald-400" />
+                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-orange-400" />
                   <p className="text-sm text-white/60">Claiming your {info.campaign.amountPerGift} USDC…</p>
                 </div>
               ) : step === "error" ? (
@@ -231,7 +231,7 @@ export default function CampaignClaimPage({ params }: { params: Promise<{ id: st
               ) : (
                 <div className="space-y-3">
                   <div className="flex justify-center py-2">
-                    <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-emerald-400" />
+                    <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-orange-400" />
                   </div>
                   <button
                     type="button"

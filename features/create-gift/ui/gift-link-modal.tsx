@@ -82,7 +82,7 @@ export function GiftLinkModal({
               >
                 Gift link
               </p>
-              <p className="mt-2 text-sm text-emerald-300/90">
+              <p className="mt-2 text-sm text-orange-300/90">
                 {recipientHint
                   ? `Gift funded — share this claim link with ${recipientHint}.`
                   : "Gift funded — share this link with the recipient."}

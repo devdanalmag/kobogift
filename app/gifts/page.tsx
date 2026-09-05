@@ -11,6 +11,7 @@ import LoginPanel from "@/components/ui/login-panel";
 import { isCircleWalletConfigured } from "@/features/circle-wallet/config/circle-env";
 import { useCircleWallet } from "@/features/circle-wallet/model/circle-wallet-provider";
 import { ARC_TESTNET, getArcExplorerTxUrl } from "@/utils";
+import { LuCheck, LuTriangleAlert, LuRotateCcw, LuInbox, LuGift } from "react-icons/lu";
 
 type SenderGiftStatus = "active" | "expired" | "claimed" | "reclaimed";
 
@@ -23,6 +24,11 @@ type SenderGiftItem = {
   createdAt: string;
   fundedTxHash: string;
   reclaimTxHash?: string;
+  recipientAddress?: string;
+  claimedAt?: string;
+  giftMessage?: string;
+  recipientDisplayName?: string;
+  senderDisplayName?: string;
 };
 
 type SenderGiftsResponse =
@@ -32,10 +38,11 @@ type SenderGiftsResponse =
 type ReceivedGiftItem = {
   paymentIdHash: string;
   amountUsdc: string;
-  txHash: string;
-  senderDisplayName: string | null;
-  giftMessage: string | null;
-  claimedAt: string | null;
+  senderAddress?: string;
+  senderDisplayName?: string;
+  giftMessage?: string;
+  claimedAt: string;
+  txHash?: string;
 };
 
 type ReceivedGiftsResponse =
@@ -277,7 +284,7 @@ function SenderDashboardContent() {
             </p>
           )}
 
-          {status && <p className="break-all text-sm text-emerald-300">{status}</p>}
+          {status && <p className="break-all text-sm text-orange-300">{status}</p>}
           {error && gifts.length === 0 && receivedGifts.length === 0 && (
             <p className="text-sm text-rose-400">{error}</p>
           )}
@@ -355,7 +362,7 @@ function SenderDashboardContent() {
                         {gift.amountUsdc}{" "}
                         <span className="text-base font-normal text-white/60">USDC</span>
                       </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-emerald-300">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-orange-300">
                         ✓ Claimed
                       </span>
                     </div>
@@ -417,7 +424,7 @@ function SenderDashboardContent() {
                     <span
                       className={
                         gift.status === "expired" ? "text-amber-400" :
-                        gift.status === "active" ? "text-emerald-400/80" :
+                        gift.status === "active" ? "text-orange-400/80" :
                         ""
                       }
                     >

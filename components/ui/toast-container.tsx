@@ -3,20 +3,21 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { dismissToast, subscribeToasts } from "@/lib/client/toast";
+import { LuCheck, LuCircleAlert, LuInfo, LuX } from "react-icons/lu";
 
 type ToastItem = { id: number; message: string; type: "success" | "error" | "info" };
 
 const TYPE_CLASS: Record<ToastItem["type"], string> = {
-  success: "border-emerald-500/40 bg-emerald-950/80 text-emerald-200",
+  success: "border-orange-500/40 bg-orange-950/80 text-orange-200",
   error: "border-rose-500/40 bg-rose-950/80 text-rose-200",
   info: "border-white/15 bg-black/80 text-white/85",
 };
 
-const TYPE_ICON: Record<ToastItem["type"], string> = {
-  success: "✓",
-  error: "✕",
-  info: "·",
-};
+function ToastIcon({ type }: { type: ToastItem["type"] }) {
+  if (type === "success") return <LuCheck className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />;
+  if (type === "error") return <LuCircleAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />;
+  return <LuInfo className="w-4 h-4 text-white/80 shrink-0 mt-0.5" />;
+}
 
 export default function ToastContainer() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -39,17 +40,15 @@ export default function ToastContainer() {
             transition={{ duration: 0.22, ease: "easeOut" }}
             className={`flex max-w-[340px] items-start gap-2.5 rounded-xl border px-4 py-3 text-sm shadow-2xl backdrop-blur-md ${TYPE_CLASS[t.type]}`}
           >
-            <span className="mt-px text-base leading-none font-bold shrink-0" aria-hidden>
-              {TYPE_ICON[t.type]}
-            </span>
+            <ToastIcon type={t.type} />
             <span className="leading-snug">{t.message}</span>
             <button
               type="button"
               onClick={() => dismissToast(t.id)}
               aria-label="Dismiss"
-              className="ml-1 shrink-0 text-base leading-none opacity-50 transition hover:opacity-100"
+              className="ml-1 shrink-0 p-0.5 opacity-50 transition hover:opacity-100"
             >
-              ×
+              <LuX className="w-3.5 h-3.5" />
             </button>
           </motion.div>
         ))}

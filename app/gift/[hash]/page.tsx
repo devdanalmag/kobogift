@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
+import { LuGift, LuLock, LuCheck } from "react-icons/lu";
 import AppShell from "@/components/ui/app-shell";
 import GlassCard from "@/components/ui/glass-card";
 import MainMenu from "@/components/ui/main-menu";
@@ -321,7 +322,9 @@ function GiftClaimContent() {
             <MainMenu />
           </div>
           <div className="space-y-3">
-            <p className="text-5xl">🎁</p>
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+              <LuGift className="w-8 h-8" />
+            </div>
             <h1 className="app-heading text-2xl">Gift not found</h1>
             <p className="soft-text text-sm">
               This gift link is invalid, already claimed, or has expired.
@@ -406,7 +409,7 @@ function GiftClaimContent() {
                 <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-white/10">
                   <div
                     className={`h-full rounded-full transition-all duration-1000 ${
-                      expiryUrgent ? "bg-rose-400" : expiryProgressPct < 30 ? "bg-amber-400" : "bg-emerald-400"
+                      expiryUrgent ? "bg-rose-400" : expiryProgressPct < 30 ? "bg-amber-400" : "bg-orange-400"
                     }`}
                     style={{ width: `${expiryProgressPct}%` }}
                   />
@@ -418,8 +421,8 @@ function GiftClaimContent() {
               <p className="app-chain-badge mx-auto">
                 {ARC_TESTNET.chainName} · {ARC_TESTNET.chainId}
               </p>
-              <p className="text-sm tracking-[0.06em] text-white/75">
-                🎁 You received a gift
+              <p className="text-sm tracking-[0.06em] text-white/75 flex items-center justify-center gap-1.5">
+                <LuGift className="w-4 h-4 text-orange-400" /> You received a gift
               </p>
               <h1 className="app-heading text-4xl sm:text-5xl">{amountLabel}</h1>
               <p className="soft-text text-sm">Someone sent you crypto</p>
@@ -447,10 +450,10 @@ function GiftClaimContent() {
               {!authenticated ? (
                 <>
                   {!giftLoading && giftAmountUsdc && (
-                    <div className="flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-950/20 px-4 py-3 text-left">
-                      <span className="shrink-0 text-base text-emerald-400" aria-hidden>🔒</span>
+                    <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-950/20 px-4 py-3 text-left">
+                      <LuLock className="shrink-0 text-base text-orange-400 w-4 h-4 mt-0.5" aria-hidden />
                       <div className="space-y-0.5">
-                        <p className="text-xs font-medium text-emerald-300/90">
+                        <p className="text-xs font-medium text-orange-300/90">
                           Funds locked in Arc smart contract
                         </p>
                         <p className="text-xs text-white/50">
@@ -527,7 +530,7 @@ function GiftClaimContent() {
           )}
 
           {status && (
-            <p className="text-xs text-emerald-300/90">{status}</p>
+            <p className="text-xs text-orange-300/90">{status}</p>
           )}
           {txHash && (
             <a
@@ -563,14 +566,14 @@ function GiftClaimContent() {
               className="glass-card w-full max-w-[400px] overflow-hidden p-0"
             >
               {/* Green header band */}
-              <div className="relative flex flex-col items-center bg-gradient-to-b from-emerald-950/60 to-transparent px-6 pb-6 pt-8">
+              <div className="relative flex flex-col items-center bg-orange-950/30 px-6 pb-6 pt-8">
                 <motion.div
                   initial={{ scale: 0.4, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1, duration: 0.35, type: "spring", stiffness: 200 }}
-                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-emerald-500/50 bg-emerald-950/80 text-3xl shadow-lg shadow-emerald-900/40"
+                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-orange-500/50 bg-orange-950/80 text-3xl shadow-lg shadow-orange-900/40 text-orange-400"
                 >
-                  ✓
+                  <LuCheck className="w-8 h-8" />
                 </motion.div>
                 <motion.h2
                   initial={{ opacity: 0, y: 8 }}
@@ -601,7 +604,7 @@ function GiftClaimContent() {
                 >
                   {giftAmountUsdc && (
                     <div className="flex items-baseline justify-center gap-2">
-                      <span className="text-5xl font-bold tracking-tight text-emerald-300">
+                      <span className="text-5xl font-bold tracking-tight text-orange-300">
                         {giftAmountUsdc}
                       </span>
                       <span className="text-xl text-white/50">USDC</span>
@@ -643,9 +646,10 @@ function GiftClaimContent() {
                   </div>
                   <Link
                     href={`/create${giftAmountUsdc ? `?amount=${encodeURIComponent(giftAmountUsdc)}` : ""}`}
-                    className="accent-gradient inline-flex w-full items-center justify-center rounded-[var(--radius)] px-6 py-3.5 text-base font-medium transition hover:scale-[1.02]"
+                    className="accent-gradient inline-flex w-full items-center justify-center gap-2 rounded-[var(--radius)] px-6 py-3.5 text-base font-medium transition hover:scale-[1.02]"
                   >
-                    🎁 Send someone a gift →
+                    <LuGift className="w-5 h-5" />
+                    <span>Send someone a gift →</span>
                   </Link>
                   <Link
                     href="/wallet"

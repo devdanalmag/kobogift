@@ -93,21 +93,32 @@ https://kobogift.xyz
 
 ## 5. Screen-by-Screen UI Transformation
 
-### 5.1 Landing Page (`/`)
-- **Navigation Bar**: Upgraded with the new KoboGift wordmark, live network pill (`Arc Testnet`), ghost navigation links, and a prominent `Send USDC →` gradient CTA.
-- **Hero Section**:
-  - High-impact headline: *"Send or request USDC — just share a link."*
-  - Floating 3D coins and gift tokens with physics-based floating keyframes.
-  - Interactive **Hero Scene**: Animated sequence showing a gift being created ($25 USDC) → sealed into a secure link (`kobogift.xyz/g/7f3a…b1`) → shared via messenger → claimed instantly on a mobile screen.
-  - Live On-Chain Stats counters (Time to first claim `< 60s`, Gas for recipient `$0.00`, Total volume).
-- **Technology Badges**: Luminous badges for Arc L1, USDC, Circle Wallets, and Gasless Relayer with animated pulse indicators.
-- **"How It Works" 4-Step Interactive Flow**: Cards with glowing numeric badges (`01`–`04`), custom emoji tiles, and smooth reveal transitions.
-- **Recipient Experience Showcase**: Interactive phone mockup displaying a live unwrap card and feature checklist (No seed phrase, No gas, Verifiable onchain, Expiry protection).
-- **Use Cases Grid**: Categorized cards with custom icons for Birthday Gifts, Payment Requests, Freelancer Payouts, and Community Rewards.
-- **Roadmap Section**: Detailed 3-phase roadmap with status pills (`Done`, `In progress`, `Planned`).
-- **Live On-Chain Events Feed**: Real-time ticker and explorer-linked event logs for recent gifts and claims.
-- **Interactive FAQ Accordion**: Clean expandable questions with verified smart contract links.
-- **Footer CTA & Navigation**: High-conversion footer banner and links.
+### 5.1 Reimagined Home Page (`/`)
+- **Floating Glass Capsule Navigation Bar**:
+  - Floating pill navbar with backdrop blur (`rgba(13, 18, 31, 0.75)`), live Arc L1 heartbeat indicator with animated pulse dot, quick jump links, Request link, Send USDC gradient button, and Help trigger.
+- **Hero Section & Messaging**:
+  - **Tagline**: *"The Instant Digital Cash Link Protocol · Powered by Arc L1"*
+  - **Headline**: *"Send Real Digital Cash. In a Single Link. Zero Gas. Zero Seed Phrases."*
+  - **Subheading**: *"Turn USDC into magic claim links. Share money via WhatsApp, Telegram, iMessage, or X. Recipients tap, log in with Google in 3 seconds, and the cash is theirs in a non-custodial wallet — under 60 seconds, zero gas fees, zero crypto setup."*
+- **Interactive Live Link Composer (`HeroComposer.tsx`)**:
+  - Live interactive playground right in the Hero where visitors can:
+    - Choose occasions (🎉 Birthday, ☕ Coffee, ⚡ Bounty, 🎁 Surprise, 🍕 Split Bill)
+    - Toggle amounts ($10, $25, $50, $100, $250)
+    - Type custom sender names and personalized notes in real-time
+    - Watch a 3D hologram card dynamically update its gradient reflection, emoji badge, and simulated secure URL (`kobogift.xyz/gift/0x7f4b29#s3cr3t_k3y_92a`) with a 1-tap copy button.
+    - One-click launch button carrying parameters straight into `/create`.
+- **"Old Broken Crypto Way vs KoboGift Way" Comparison (`ComparisonSection.tsx`)**:
+  - Side-by-side contrast grid showing why traditional crypto transfers fail (42-char addresses, extension downloads, 12 seed words, gas hurdles, lost funds) versus KoboGift's instant, gasless, 1-tap Google login.
+- **3-Step Protocol Journey (`InteractiveJourney.tsx`)**:
+  - Tabbed interactive visualizer with live mockups for Step 1 (Create & Lock), Step 2 (Drop Link in WhatsApp/Telegram), and Step 3 (Instant Claim & Settle on Arc).
+- **Use Cases Grid**:
+  - 6 rich glass hologram cards for Gifts & Celebrations, Freelancer Payouts, Micro-Tips & Bounties, Viral Giveaways, One-Tap Payment Requests, and Zero-Risk Expiry Protection.
+- **Cryptographic Architecture Pillars (`LANDING_PILLARS`)**:
+  - 4 deep-dive cards detailing client-side `#fragment` cryptography, sub-second Arc L1 finality, automated gasless relayer, and Circle SCA smart accounts.
+- **Live Arc Transactions Stream (`LiveTicker.tsx`)**:
+  - Real-time animated ticker showing recent gift funding and claim events linked to ArcScan.
+- **Magnetic Bottom CTA Banner**:
+  - Glowing gradient banner with direct launch links.
 
 ### 5.2 Create Gift Flow (`/create`)
 - **Gift Configuration Card**:

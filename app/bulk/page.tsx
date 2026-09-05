@@ -62,7 +62,7 @@ function GiftLinkCard({ gift, index }: { gift: GiftResult; index: number }) {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 px-2 py-0.5 text-xs font-bold text-emerald-400">
+          <span className="rounded-lg border border-orange-500/30 bg-orange-950/40 px-2 py-0.5 text-xs font-bold text-orange-400">
             {gift.amountUsdc} USDC
           </span>
           <span className="text-xs text-white/35 truncate max-w-[160px]">
@@ -183,7 +183,7 @@ function SimpleTab({
 
       <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/4 px-4 py-3">
         <span className="text-sm text-white/50">Total</span>
-        <span className="text-base font-bold text-emerald-400">{total} USDC</span>
+        <span className="text-base font-bold text-orange-400">{total} USDC</span>
       </div>
     </div>
   );
@@ -258,7 +258,7 @@ function AdvancedTab({
 
       <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/4 px-4 py-3">
         <span className="text-sm text-white/50">Total ({rows.length} gifts)</span>
-        <span className="text-base font-bold text-emerald-400">
+        <span className="text-base font-bold text-orange-400">
           {total > 0 ? total.toFixed(2) : "—"} USDC
         </span>
       </div>
@@ -457,13 +457,13 @@ export default function BulkPage() {
             {/* Campaign upsell */}
             <Link
               href="/campaign/new"
-              className="flex items-center justify-between gap-3 rounded-xl border border-emerald-500/20 bg-emerald-950/20 px-4 py-3 transition hover:border-emerald-500/40"
+              className="flex items-center justify-between gap-3 rounded-xl border border-orange-500/20 bg-orange-950/20 px-4 py-3 transition hover:border-orange-500/40"
             >
               <div>
-                <p className="text-sm font-medium text-emerald-400">Want one link for everyone?</p>
+                <p className="text-sm font-medium text-orange-400">Want one link for everyone?</p>
                 <p className="text-xs text-white/40">Create a campaign → one URL, auto-claim, tracks emails</p>
               </div>
-              <span className="shrink-0 text-emerald-400/60 text-lg">→</span>
+              <span className="shrink-0 text-orange-400/60 text-lg">→</span>
             </Link>
 
             <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
@@ -591,7 +591,7 @@ export default function BulkPage() {
               {/* Processing status */}
               {isProcessing && (
                 <div className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/4 px-4 py-3">
-                  <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-white/15 border-t-emerald-400" />
+                  <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-white/15 border-t-orange-400" />
                   <p className="text-sm text-white/70">{statusMsg}</p>
                 </div>
               )}

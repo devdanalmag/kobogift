@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { LuGift, LuCheck, LuZap, LuKey, LuSparkles } from "react-icons/lu";
 
 const STEPS = [
   {
@@ -9,7 +10,7 @@ const STEPS = [
     screen: (
       <div className="flex flex-col gap-3 p-4">
         <div className="text-center">
-          <p className="text-xs font-semibold text-emerald-400/80 uppercase tracking-widest">KoboGift</p>
+          <p className="text-xs font-semibold text-orange-400/80 uppercase tracking-widest">KoboGift</p>
           <p className="mt-1 text-sm font-bold text-white">Send crypto like a message</p>
         </div>
         <div className="rounded-xl bg-white/6 border border-white/8 p-3 space-y-1">
@@ -18,13 +19,13 @@ const STEPS = [
         </div>
         <div className="rounded-xl bg-white/6 border border-white/8 p-3 space-y-1">
           <p className="text-[10px] text-white/40 uppercase tracking-widest">Message</p>
-          <p className="text-sm text-white/90">Happy birthday! 🎉</p>
+          <p className="text-sm text-white/90">Happy birthday!</p>
         </div>
         <div className="rounded-xl bg-white/6 border border-white/8 p-3 space-y-1">
           <p className="text-[10px] text-white/40 uppercase tracking-widest">Amount</p>
           <p className="text-lg font-bold text-white">$10 <span className="text-sm font-normal text-white/50">USDC</span></p>
         </div>
-        <div className="mt-1 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 p-3 text-center text-sm font-semibold text-slate-950">
+        <div className="mt-1 rounded-xl bg-orange-500 p-3 text-center text-sm font-bold text-slate-950 shadow-md shadow-orange-500/20">
           Create gift →
         </div>
       </div>
@@ -35,7 +36,9 @@ const STEPS = [
     screen: (
       <div className="flex flex-col items-center gap-3 p-4">
         <div className="text-center">
-          <p className="text-xs font-semibold text-emerald-400 uppercase tracking-widest">Gift funded ✓</p>
+          <p className="text-xs font-semibold text-orange-400 uppercase tracking-widest flex items-center justify-center gap-1">
+            Gift funded <LuCheck className="w-3.5 h-3.5" />
+          </p>
           <p className="mt-1 text-sm font-bold text-white">Share the link</p>
         </div>
         <div className="w-24 h-24 rounded-xl bg-white p-2 flex items-center justify-center">
@@ -73,8 +76,8 @@ const STEPS = [
           <p className="text-[10px] text-white/60 font-mono truncate">kobogift.xyz/gift/0x4f2a…#secret</p>
         </div>
         <div className="w-full grid grid-cols-2 gap-2">
-          <div className="rounded-xl bg-emerald-500/15 border border-emerald-500/25 p-2 text-center text-xs text-emerald-300 font-medium">WhatsApp</div>
-          <div className="rounded-xl bg-blue-500/15 border border-blue-500/25 p-2 text-center text-xs text-blue-300 font-medium">Telegram</div>
+          <div className="rounded-xl bg-orange-500/15 border border-orange-500/25 p-2 text-center text-xs text-orange-300 font-medium">WhatsApp</div>
+          <div className="rounded-xl bg-orange-500/15 border border-orange-500/25 p-2 text-center text-xs text-orange-300 font-medium">Telegram</div>
         </div>
       </div>
     ),
@@ -84,24 +87,26 @@ const STEPS = [
     screen: (
       <div className="flex flex-col gap-3 p-4">
         <div className="text-center space-y-1">
-          <div className="mx-auto w-10 h-10 rounded-full bg-violet-500/20 border border-violet-400/30 flex items-center justify-center text-lg">🎁</div>
+          <div className="mx-auto w-10 h-10 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-400">
+            <LuGift className="w-5 h-5" />
+          </div>
           <p className="text-xs text-white/50">Alex K. sent you</p>
           <p className="text-2xl font-bold text-white">$10 <span className="text-base font-normal text-white/50">USDC</span></p>
-          <p className="text-xs italic text-white/60">&quot;Happy birthday! 🎉&quot;</p>
+          <p className="text-xs italic text-white/60">&quot;Happy birthday!&quot;</p>
         </div>
         <div className="rounded-xl border border-white/8 bg-white/4 p-3 space-y-1.5">
           {[
-            { icon: "⚡", text: "Ready in 10 seconds" },
-            { icon: "🔑", text: "Sign in with Google or email" },
-            { icon: "$0", text: "Zero gas fees" },
-          ].map(({ icon, text }) => (
-            <div key={text} className="flex items-center gap-2 text-xs text-white/60">
-              <span className="text-sm w-5 text-center">{icon}</span>
+            { icon: <LuZap className="w-3.5 h-3.5 text-orange-400" />, text: "Ready in 10 seconds" },
+            { icon: <LuKey className="w-3.5 h-3.5 text-orange-400" />, text: "Sign in with Google or email" },
+            { icon: <span className="font-bold text-orange-400 text-xs">$0</span>, text: "Zero gas fees" },
+          ].map(({ icon, text }, idx) => (
+            <div key={idx} className="flex items-center gap-2 text-xs text-white/60">
+              <span className="w-5 flex justify-center">{icon}</span>
               <span>{text}</span>
             </div>
           ))}
         </div>
-        <div className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 p-3 text-center text-sm font-semibold text-white">
+        <div className="rounded-xl bg-orange-500 p-3 text-center text-sm font-bold text-slate-950 shadow-md shadow-orange-500/20">
           Claim with Google or email →
         </div>
       </div>
@@ -112,29 +117,36 @@ const STEPS = [
     screen: (
       <div className="flex flex-col items-center gap-3 p-4 text-center">
         <div className="relative">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400/40 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={2.5}>
+          <div className="w-16 h-16 rounded-full bg-orange-500/20 border-2 border-orange-400/40 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          {["🎉","✨","🎊","⭐"].map((e, i) => (
-            <span key={i} className="absolute text-sm animate-bounce" style={{
-              top: `${[-20,-15,60,55][i]}%`,
-              left: `${[-20,90,-10,85][i]}%`,
-              animationDelay: `${i * 0.15}s`
-            }}>{e}</span>
+          {[
+            { top: "-20%", left: "-20%" },
+            { top: "-15%", left: "90%" },
+            { top: "60%", left: "-10%" },
+            { top: "55%", left: "85%" },
+          ].map((pos, i) => (
+            <span
+              key={i}
+              className="absolute animate-bounce text-orange-400"
+              style={{ ...pos, animationDelay: `${i * 0.15}s` }}
+            >
+              <LuSparkles className="w-4 h-4" />
+            </span>
           ))}
         </div>
         <div>
           <p className="text-base font-bold text-white">$10 USDC claimed!</p>
           <p className="text-xs text-white/50 mt-0.5">On Arc Testnet · gasless</p>
         </div>
-        <div className="w-full rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 space-y-1">
+        <div className="w-full rounded-xl bg-orange-500/10 border border-orange-500/20 p-3 space-y-1">
           <p className="text-[10px] text-white/40 uppercase tracking-widest">Wallet balance</p>
-          <p className="text-xl font-bold text-emerald-300">10.00 <span className="text-sm font-normal text-white/50">USDC</span></p>
+          <p className="text-xl font-bold text-orange-300">10.00 <span className="text-sm font-normal text-white/50">USDC</span></p>
         </div>
-        <div className="w-full rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 p-3 text-center text-sm font-semibold text-white">
-          🎁 Send someone a gift
+        <div className="w-full rounded-xl bg-orange-500 p-3 text-center text-sm font-bold text-slate-950 shadow-md shadow-orange-500/20 flex items-center justify-center gap-1.5">
+          <LuGift className="w-4 h-4" /> Send someone a gift
         </div>
       </div>
     ),
@@ -180,9 +192,7 @@ export default function DemoFlow() {
       <div
         className="absolute inset-0 -z-10 rounded-[2rem] blur-2xl transition-all duration-700"
         style={{
-          background: step === 3
-            ? "radial-gradient(ellipse at 50% 60%, rgba(52,211,153,0.18) 0%, transparent 70%)"
-            : "radial-gradient(ellipse at 50% 60%, rgba(139,92,246,0.18) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 60%, rgba(249,115,22,0.18) 0%, transparent 70%)",
         }}
         aria-hidden
       />
@@ -190,7 +200,7 @@ export default function DemoFlow() {
       {/* Phone frame */}
       <div
         className="relative rounded-[2rem] border-2 border-white/15 bg-[#0a0a14] shadow-2xl overflow-hidden"
-        style={{ boxShadow: "0 0 60px rgba(139,92,246,0.15), 0 25px 50px rgba(0,0,0,0.5)" }}
+        style={{ boxShadow: "0 0 60px rgba(249,115,22,0.15), 0 25px 50px rgba(0,0,0,0.5)" }}
       >
         {/* Notch */}
         <div className="flex justify-center pt-3 pb-1">
@@ -204,7 +214,7 @@ export default function DemoFlow() {
               key={s.label}
               type="button"
               onClick={() => { goTo(i); startTimer(); }}
-              className={`h-1 rounded-full transition-all duration-300 ${i === step ? "w-6 bg-violet-400" : "w-1.5 bg-white/20 hover:bg-white/40"}`}
+              className={`h-1 rounded-full transition-all duration-300 ${i === step ? "w-6 bg-orange-500" : "w-1.5 bg-white/20 hover:bg-white/40"}`}
             />
           ))}
         </div>
@@ -234,7 +244,7 @@ export default function DemoFlow() {
 
       {/* Step label */}
       <p className="mt-3 text-center text-xs text-white/40">
-        <span className="text-violet-400">{currentStep.label}</span>
+        <span className="text-orange-400">{currentStep.label}</span>
         {" "}· step {step + 1}/{STEPS.length}
       </p>
     </div>

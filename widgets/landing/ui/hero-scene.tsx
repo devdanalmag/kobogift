@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useInView, useReducedMotion } from "framer-motion";
 import type { TargetAndTransition } from "framer-motion";
+import { LuLink, LuSparkles, LuCheck } from "react-icons/lu";
 
 type Stage = "compose" | "seal" | "fly" | "arrive" | "done";
 
@@ -11,7 +12,7 @@ const CAPTIONS: Record<Stage, string> = {
   seal: "Sealing $25 into a secure link…",
   fly: "Sharing via Telegram…",
   arrive: "Recipient signs in — wallet created",
-  done: "Claimed in under 60 seconds ✓",
+  done: "Claimed in under 60 seconds",
 };
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
@@ -167,11 +168,11 @@ export default function HeroScene() {
         </motion.div>
 
         <motion.div
-          className="hero-scene-linkpill"
+          className="hero-scene-linkpill flex items-center gap-1.5"
           animate={linkPillVariants[stage]}
           transition={{ duration: 0.8, ease: EASE }}
         >
-          <span aria-hidden>🔗</span>
+          <LuLink className="w-3.5 h-3.5 text-orange-400 shrink-0" aria-hidden />
           <span className="hero-scene-linkpill-url">
             kobogift.xyz/g/<span className="mono">7f3a…b1</span>
           </span>
@@ -185,9 +186,7 @@ export default function HeroScene() {
               animate={notifVariants[stage]}
               transition={{ duration: 0.5, ease: EASE }}
             >
-              <span className="hero-scene-notif-icon" aria-hidden>
-                ✦
-              </span>
+              <LuSparkles className="hero-scene-notif-icon w-3.5 h-3.5 text-orange-400 shrink-0" aria-hidden />
               <div>
                 <b>New gift link</b>
                 <span>via Telegram</span>
@@ -214,14 +213,12 @@ export default function HeroScene() {
                 Claim with Google →
               </motion.div>
               <motion.div
-                className="hero-scene-gift-done"
+                className="hero-scene-gift-done flex items-center justify-center gap-1"
                 animate={giftDoneVariants[stage]}
                 transition={{ duration: 0.4 }}
               >
-                <span className="hero-scene-gift-done-check" aria-hidden>
-                  ✓
-                </span>{" "}
-                Claimed · on Arc
+                <LuCheck className="hero-scene-gift-done-check w-3.5 h-3.5 text-orange-400 inline" aria-hidden />
+                <span>Claimed · on Arc</span>
               </motion.div>
             </motion.div>
           </div>

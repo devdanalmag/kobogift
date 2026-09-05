@@ -8,15 +8,11 @@ type LogoMarkProps = {
 };
 
 /**
- * KoboGift Brand Mark — Geometric glowing 3D gift-token with emerald, cyan, and gold gradient facets.
+ * KoboGift Brand Mark — Geometric glowing 3D gift-token in cohesive orange theme.
  */
 export default function LogoMark({ size = 28, className }: LogoMarkProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const gBase = `kg-base-${uid}`;
-  const gBorder = `kg-border-${uid}`;
-  const gEmerald = `kg-em-${uid}`;
-  const gCyan = `kg-cy-${uid}`;
-  const gGold = `kg-gd-${uid}`;
   const gGlow = `kg-gl-${uid}`;
 
   return (
@@ -28,43 +24,19 @@ export default function LogoMark({ size = 28, className }: LogoMarkProps) {
       aria-hidden
       style={{
         flexShrink: 0,
-        filter: "drop-shadow(0 3px 12px rgba(16, 185, 129, 0.45))",
+        filter: "drop-shadow(0 3px 12px rgba(249, 115, 22, 0.45))",
       }}
     >
       <defs>
-        {/* Background gradient */}
+        {/* Background dark tile */}
         <linearGradient id={gBase} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#081414" />
-          <stop offset="50%" stopColor="#0a1d1c" />
-          <stop offset="100%" stopColor="#06121a" />
-        </linearGradient>
-
-        {/* Outer border gradient */}
-        <linearGradient id={gBorder} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
-          <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.9" />
-        </linearGradient>
-
-        {/* Facet gradients */}
-        <linearGradient id={gEmerald} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#34d399" />
-          <stop offset="100%" stopColor="#059669" />
-        </linearGradient>
-
-        <linearGradient id={gCyan} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="100%" stopColor="#0284c7" />
-        </linearGradient>
-
-        <linearGradient id={gGold} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#fbbf24" />
-          <stop offset="100%" stopColor="#d97706" />
+          <stop offset="0%" stopColor="#140c06" />
+          <stop offset="100%" stopColor="#0a0705" />
         </linearGradient>
 
         {/* Radial sheen */}
         <radialGradient id={gGlow} cx="35%" cy="30%" r="60%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
           <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
         </radialGradient>
       </defs>
@@ -78,28 +50,29 @@ export default function LogoMark({ size = 28, className }: LogoMarkProps) {
         height="92"
         rx="24"
         fill="none"
-        stroke={`url(#${gBorder})`}
-        strokeWidth="2.5"
+        stroke="#f97316"
+        strokeOpacity="0.8"
+        strokeWidth="2"
       />
       <rect x="4" y="4" width="92" height="92" rx="24" fill={`url(#${gGlow})`} />
 
       {/* 3D Gift-Token Geometry */}
       <g transform="translate(50, 50)">
-        {/* Isometric Cube Faces */}
-        {/* Top Face (Emerald Sheen) */}
+        {/* Isometric Cube Faces (Solid Orange Shades) */}
+        {/* Top Face */}
         <polygon
           points="0,-26 25,-12 0,2 -25,-12"
-          fill={`url(#${gEmerald})`}
+          fill="#fb923c"
         />
-        {/* Left Face (Cyan Sheen) */}
+        {/* Left Face */}
         <polygon
           points="-25,-12 0,2 0,28 -25,14"
-          fill={`url(#${gCyan})`}
+          fill="#f97316"
         />
-        {/* Right Face (Gold Sheen) */}
+        {/* Right Face */}
         <polygon
           points="0,2 25,-12 25,14 0,28"
-          fill={`url(#${gGold})`}
+          fill="#ea580c"
         />
 
         {/* Ribbon Stripes across isometric faces */}
@@ -131,20 +104,20 @@ export default function LogoMark({ size = 28, className }: LogoMarkProps) {
         {/* Top Gift Bow Ribbon Loops */}
         <path
           d="M0,-26 C-10,-38 -20,-24 -6,-24 C-2,-24 0,-26 0,-26 Z"
-          fill="#34d399"
+          fill="#fb923c"
           stroke="#ffffff"
           strokeWidth="1.2"
         />
         <path
           d="M0,-26 C10,-38 20,-24 6,-24 C2,-24 0,-26 0,-26 Z"
-          fill="#fbbf24"
+          fill="#f97316"
           stroke="#ffffff"
           strokeWidth="1.2"
         />
 
         {/* Center Sparkle Glint */}
         <circle cx="0" cy="-26" r="3.2" fill="#ffffff" />
-        <circle cx="0" cy="-26" r="5" fill="#10b981" opacity="0.5" />
+        <circle cx="0" cy="-26" r="5" fill="#f97316" opacity="0.5" />
       </g>
     </svg>
   );

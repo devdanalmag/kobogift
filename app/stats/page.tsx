@@ -157,7 +157,7 @@ export default function StatsPage() {
                         >
                           <div className="flex w-full flex-1 flex-col items-center justify-end gap-px">
                             <div
-                              className="w-full rounded-t bg-emerald-500/70 transition-all"
+                              className="w-full rounded-t bg-orange-500/70 transition-all"
                               style={{
                                 height: `${fundedH}%`,
                                 minHeight: d.giftsFunded > 0 ? 2 : 0,
@@ -187,7 +187,7 @@ export default function StatsPage() {
                 </div>
                 <div className="mt-3 flex gap-4 text-[10px] text-white/40">
                   <span className="flex items-center gap-1">
-                    <span className="inline-block h-2 w-2 rounded-sm bg-emerald-500/70" />
+                    <span className="inline-block h-2 w-2 rounded-sm bg-orange-500/70" />
                     Funded
                   </span>
                   <span className="flex items-center gap-1">
@@ -233,7 +233,7 @@ export default function StatsPage() {
                           </div>
                           <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-white/8">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-emerald-500/80 to-sky-400/80 transition-all"
+                              className="h-full rounded-full bg-orange-500 transition-all"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -268,7 +268,7 @@ export default function StatsPage() {
                         </div>
                         <div className="mt-0.5 h-1.5 w-full overflow-hidden rounded-full bg-white/8">
                           <div
-                            className="h-full rounded-full bg-emerald-500/60"
+                            className="h-full rounded-full bg-orange-500/60"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -296,7 +296,7 @@ export default function StatsPage() {
                           item.kind === "claim_success"
                             ? "text-sky-300"
                             : item.kind === "gift_funded"
-                              ? "text-emerald-300"
+                              ? "text-orange-300"
                               : "text-amber-300"
                         }`}
                       >

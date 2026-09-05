@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import AppShell from "@/components/ui/app-shell";
 import GlassCard from "@/components/ui/glass-card";
+import { LuTriangleAlert } from "react-icons/lu";
 
 type ErrorPageProps = {
   error: Error & { digest?: string };
@@ -19,7 +20,9 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
     <AppShell className="flex items-center justify-center px-4 py-8">
       <GlassCard className="relative z-[1] w-full max-w-[420px] space-y-6 p-8 text-center">
         <div className="space-y-2">
-          <p className="text-4xl">⚠️</p>
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 mb-2">
+            <LuTriangleAlert className="w-8 h-8" />
+          </div>
           <h1 className="app-heading text-2xl">Something went wrong</h1>
           <p className="soft-text text-sm">
             An unexpected error occurred. Try again or refresh the page.

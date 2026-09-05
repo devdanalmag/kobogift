@@ -5,47 +5,29 @@
 const LOGO_MARK_SVG = `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="kg-base" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#081414" />
-      <stop offset="50%" stop-color="#0a1d1c" />
-      <stop offset="100%" stop-color="#06121a" />
-    </linearGradient>
-    <linearGradient id="kg-border" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#10b981" stop-opacity="0.8" />
-      <stop offset="50%" stop-color="#06b6d4" stop-opacity="0.6" />
-      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.9" />
-    </linearGradient>
-    <linearGradient id="kg-em" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#34d399" />
-      <stop offset="100%" stop-color="#059669" />
-    </linearGradient>
-    <linearGradient id="kg-cy" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#0284c7" />
-    </linearGradient>
-    <linearGradient id="kg-gd" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fbbf24" />
-      <stop offset="100%" stop-color="#d97706" />
+      <stop offset="0%" stop-color="#140c06" />
+      <stop offset="100%" stop-color="#0a0705" />
     </linearGradient>
     <radialGradient id="kg-gl" cx="35%" cy="30%" r="60%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2" />
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
   </defs>
   <rect x="4" y="4" width="92" height="92" rx="24" fill="url(#kg-base)" />
-  <rect x="4" y="4" width="92" height="92" rx="24" fill="none" stroke="url(#kg-border)" stroke-width="2.5" />
+  <rect x="4" y="4" width="92" height="92" rx="24" fill="none" stroke="#f97316" stroke-opacity="0.8" stroke-width="2" />
   <rect x="4" y="4" width="92" height="92" rx="24" fill="url(#kg-gl)" />
   <g transform="translate(50, 50)">
-    <polygon points="0,-26 25,-12 0,2 -25,-12" fill="url(#kg-em)" />
-    <polygon points="-25,-12 0,2 0,28 -25,14" fill="url(#kg-cy)" />
-    <polygon points="0,2 25,-12 25,14 0,28" fill="url(#kg-gd)" />
+    <polygon points="0,-26 25,-12 0,2 -25,-12" fill="#fb923c" />
+    <polygon points="-25,-12 0,2 0,28 -25,14" fill="#f97316" />
+    <polygon points="0,2 25,-12 25,14 0,28" fill="#ea580c" />
     <polygon points="-6,-15 0,-18 6,-15 0,-12" fill="#ffffff" opacity="0.9" />
     <polygon points="-13,-6 0,-13 13,-6 0,1" fill="#ffffff" opacity="0.3" />
     <polygon points="-4,0 0,2 0,28 -4,26" fill="#ffffff" opacity="0.4" />
     <polygon points="0,2 4,0 4,26 0,28" fill="#ffffff" opacity="0.6" />
-    <path d="M0,-26 C-10,-38 -20,-24 -6,-24 C-2,-24 0,-26 0,-26 Z" fill="#34d399" stroke="#ffffff" stroke-width="1.2" />
-    <path d="M0,-26 C10,-38 20,-24 6,-24 C2,-24 0,-26 0,-26 Z" fill="#fbbf24" stroke="#ffffff" stroke-width="1.2" />
+    <path d="M0,-26 C-10,-38 -20,-24 -6,-24 C-2,-24 0,-26 0,-26 Z" fill="#fb923c" stroke="#ffffff" stroke-width="1.2" />
+    <path d="M0,-26 C10,-38 20,-24 6,-24 C2,-24 0,-26 0,-26 Z" fill="#f97316" stroke="#ffffff" stroke-width="1.2" />
     <circle cx="0" cy="-26" r="3.2" fill="#ffffff" />
-    <circle cx="0" cy="-26" r="5" fill="#10b981" opacity="0.5" />
+    <circle cx="0" cy="-26" r="5" fill="#f97316" opacity="0.5" />
   </g>
 </svg>`;
 

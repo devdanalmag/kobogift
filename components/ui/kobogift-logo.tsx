@@ -33,9 +33,7 @@ export default function KoboGiftLogo({
         <span style={{ color: "var(--text)" }}>Kobo</span>
         <span
           style={{
-            background: "linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #f59e0b 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+            color: "#f97316",
             marginLeft: 2,
           }}
         >

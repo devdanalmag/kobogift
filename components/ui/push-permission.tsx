@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { LuBell, LuX } from "react-icons/lu";
 
 const DISMISSED_KEY = "push_permission_dismissed";
 
@@ -53,7 +54,7 @@ export default function PushPermission({ walletAddress }: Props) {
   return (
     <div className="fixed bottom-20 left-4 right-4 z-50 mx-auto max-w-sm rounded-2xl border border-white/15 bg-[#111118]/95 p-4 shadow-2xl backdrop-blur-md">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 text-2xl">🔔</span>
+        <LuBell className="mt-0.5 w-6 h-6 text-orange-400 shrink-0" />
         <div className="flex-1 space-y-1.5">
           <p className="text-sm font-semibold text-white">Enable notifications</p>
           <p className="text-xs text-white/55">
@@ -61,7 +62,7 @@ export default function PushPermission({ walletAddress }: Props) {
           </p>
           <div className="flex gap-2 pt-1">
             <button type="button" onClick={() => void handleEnable()} disabled={saving}
-              className="rounded-lg bg-emerald-500/20 border border-emerald-500/30 px-3 py-1.5 text-xs font-medium text-emerald-400 transition hover:bg-emerald-500/30 disabled:opacity-60">
+              className="rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-1.5 text-xs font-medium text-orange-400 transition hover:bg-orange-500/30 disabled:opacity-60">
               {saving ? "Enabling…" : "Enable"}
             </button>
             <button type="button" onClick={dismiss}
@@ -70,7 +71,9 @@ export default function PushPermission({ walletAddress }: Props) {
             </button>
           </div>
         </div>
-        <button type="button" onClick={dismiss} className="text-white/30 hover:text-white/60 text-lg leading-none">×</button>
+        <button type="button" onClick={dismiss} className="text-white/30 hover:text-white/60 p-0.5">
+          <LuX className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

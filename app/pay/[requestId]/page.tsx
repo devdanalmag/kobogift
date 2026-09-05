@@ -135,7 +135,7 @@ function InfoModal({
                     {request.displayName}
                   </span>{" "}
                   is asking you to send{" "}
-                  <span className="font-medium text-emerald-400">
+                  <span className="font-medium text-orange-400">
                     {request.amountUsdc} USDC
                   </span>
                   {request.message ? (
@@ -175,7 +175,7 @@ function InfoModal({
                     "Done — no waiting, no extra steps.",
                   ].map((step, i) => (
                     <li key={i} className="flex gap-2">
-                      <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-[10px] font-bold text-emerald-400">
+                      <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-[10px] font-bold text-orange-400">
                         {i + 1}
                       </span>
                       <span>{step}</span>
@@ -349,7 +349,7 @@ function PayContent({ request }: { request: RequestDetails }) {
           initial={{ scale: 0.4, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.05, type: "spring", stiffness: 200 }}
-          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-emerald-500/50 bg-emerald-950/80 text-3xl"
+          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-orange-500/50 bg-orange-950/80 text-3xl"
         >
           ✓
         </motion.div>
@@ -477,7 +477,7 @@ function PayContent({ request }: { request: RequestDetails }) {
           </>
         ) : isProcessing ? (
           <div className="space-y-3 text-center">
-            <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-emerald-400" />
+            <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-orange-400" />
             <p className="text-sm text-white/70">{statusMsg}</p>
           </div>
         ) : (

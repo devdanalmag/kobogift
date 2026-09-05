@@ -52,7 +52,7 @@ function PayPreview({
         </span>
         <span className="text-xs text-white/45">USDC</span>
       </div>
-      <div className="mt-1 rounded-[var(--radius)] border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-xs font-medium text-emerald-400/70">
+      <div className="mt-1 rounded-[var(--radius)] border border-orange-500/20 bg-orange-500/10 px-4 py-1.5 text-xs font-medium text-orange-400/70">
         Pay {validAmount ? amount : "—"} USDC →
       </div>
     </div>

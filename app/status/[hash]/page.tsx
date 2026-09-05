@@ -180,7 +180,7 @@ export default function GiftStatusPage() {
                   </span>
                 )}
                 {isPollingStatus && (
-                  <span className="rounded-full border border-emerald-500/30 bg-emerald-950/30 px-3 py-1 text-[11px] text-emerald-400/80">
+                  <span className="rounded-full border border-orange-500/30 bg-orange-950/30 px-3 py-1 text-[11px] text-orange-400/80">
                     Watching · refreshes in 15s
                   </span>
                 )}
@@ -275,7 +275,7 @@ export default function GiftStatusPage() {
                     <div
                       className={`relative z-[1] mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold ${
                         isDone
-                          ? "border-emerald-500/50 bg-emerald-950/60 text-emerald-400"
+                          ? "border-orange-500/50 bg-orange-950/60 text-orange-400"
                           : step.state === "pending"
                             ? "border-white/20 bg-white/5 text-white/40"
                             : "border-white/10 bg-white/3 text-white/20"

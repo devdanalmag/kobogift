@@ -1,51 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LuSmartphone } from "react-icons/lu";
 
-type Platform = "ios" | "android" | null;
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
 
-function detectPlatform(): Platform {
-  if (typeof window === "undefined") return null;
-  const ua = navigator.userAgent;
-  const isIOS = /iPhone|iPad|iPod/.test(ua) && !(window as unknown as { MSStream?: unknown }).MSStream;
-  const isAndroid = /Android/.test(ua);
-  const isStandalone =
-    ("standalone" in navigator && (navigator as { standalone?: boolean }).standalone) ||
-    window.matchMedia("(display-mode: standalone)").matches;
-  if (isStandalone) return null;
-  if (isIOS) return "ios";
-  if (isAndroid) return "android";
-  return null;
-}
-
-const DISMISSED_KEY = "pwa_prompt_dismissed";
+const DISMISS_KEY = "linkcash_pwa_dismissed";
 
 export default function PwaInstallPrompt() {
-  const [platform] = useState<Platform>(() => {
-    if (typeof window === "undefined") return null;
-    if (sessionStorage.getItem(DISMISSED_KEY)) return null;
-    return detectPlatform();
-  });
-  const [androidPrompt, setAndroidPrompt] = useState<{ prompt: () => void } | null>(null);
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    if (sessionStorage.getItem(DISMISSED_KEY)) return false;
-    return detectPlatform() === "ios";
-  });
+  const [platform, setPlatform] = useState<"ios" | "android" | null>(null);
+  const [androidPrompt, setAndroidPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!platform || platform !== "android") return;
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setAndroidPrompt(e as unknown as { prompt: () => void });
+    // Check if already installed
+    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if ((navigator as unknown as { standalone?: boolean }).standalone) return;
+
+    // Check if dismissed recently (7 days)
+    const dismissed = localStorage.getItem(DISMISS_KEY);
+    if (dismissed && Date.now() - Number(dismissed) < 7 * 86_400_000) return;
+
+    const ua = navigator.userAgent.toLowerCase();
+    const isIos = /iphone|ipad|ipod/.test(ua);
+    const isAndroid = /android/.test(ua);
+
+    if (isIos) {
+      setPlatform("ios");
       setVisible(true);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, [platform]);
+    } else if (isAndroid) {
+      setPlatform("android");
+      const handler = (e: Event) => {
+        e.preventDefault();
+        setAndroidPrompt(e as BeforeInstallPromptEvent);
+        setVisible(true);
+      };
+      window.addEventListener("beforeinstallprompt", handler);
+      return () => window.removeEventListener("beforeinstallprompt", handler);
+    }
+  }, []);
 
   const dismiss = () => {
-    sessionStorage.setItem(DISMISSED_KEY, "1");
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
     setVisible(false);
   };
 
@@ -59,7 +58,7 @@ export default function PwaInstallPrompt() {
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-sm rounded-2xl border border-white/15 bg-[#111118]/95 p-4 shadow-2xl backdrop-blur-md">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 text-2xl">📲</span>
+        <LuSmartphone className="mt-0.5 w-6 h-6 text-orange-400 shrink-0" />
         <div className="flex-1 space-y-1">
           <p className="text-sm font-semibold text-white">Add to Home Screen</p>
           {platform === "ios" ? (

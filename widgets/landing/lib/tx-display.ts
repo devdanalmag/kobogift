@@ -11,7 +11,7 @@ export function txStatusLabel(label: string): string {
 }
 
 export function txRowIcon(label: string): string {
-  if (label.toLowerCase().includes("reclaim")) return "↩️";
-  if (label.toLowerCase().includes("fund")) return "💸";
-  return "🎁";
+  if (label.toLowerCase().includes("reclaim")) return "rotate-ccw";
+  if (label.toLowerCase().includes("fund")) return "banknote";
+  return "gift";
 }

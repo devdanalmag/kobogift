@@ -36,7 +36,7 @@ function CampaignCard({ c }: { c: CampaignItem }) {
           <p className="text-xs text-white/40 mt-0.5">{formatDate(c.createdAt)}</p>
         </div>
         <div className="shrink-0 text-right">
-          <p className="text-sm font-bold text-emerald-400">{c.amountPerGift} USDC</p>
+          <p className="text-sm font-bold text-orange-400">{c.amountPerGift} USDC</p>
           <p className="text-xs text-white/40">per gift</p>
         </div>
       </div>
@@ -45,14 +45,14 @@ function CampaignCard({ c }: { c: CampaignItem }) {
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-white/40">
           <span>{c.claimed}/{c.totalGifts} claimed</span>
-          <span className={exhausted ? "text-white/30" : "text-emerald-400/70"}>
+          <span className={exhausted ? "text-white/30" : "text-orange-400/70"}>
             {exhausted ? "Fully claimed" : `${c.remaining} remaining`}
           </span>
         </div>
         <div className="h-1.5 rounded-full bg-white/8 overflow-hidden">
           <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className={`h-full rounded-full ${pct === 100 ? "bg-emerald-500/60" : "bg-emerald-500"}`} />
+            className={`h-full rounded-full ${pct === 100 ? "bg-orange-500/60" : "bg-orange-500"}`} />
         </div>
       </div>
 

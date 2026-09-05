@@ -50,15 +50,28 @@ export default async function GiftOgImage({ params }: Props) {
             width: 220,
             height: 220,
             borderRadius: 60,
-            background: "linear-gradient(135deg, #23B56E, #1c8f58)",
+            background: "#f97316",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
-            boxShadow: "0 32px 80px rgba(35,181,110,0.35)",
-            fontSize: 100,
+            boxShadow: "0 32px 80px rgba(249,115,22,0.35)",
           }}
         >
-          🎁
+          <svg
+            width="108"
+            height="108"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="8" width="18" height="4" rx="1" />
+            <path d="M12 8v13" />
+            <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+            <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+          </svg>
         </div>
 
         {/* Text */}
@@ -66,7 +79,7 @@ export default async function GiftOgImage({ params }: Props) {
           <div
             style={{
               fontSize: 28,
-              color: "#34d399",
+              color: "#fb923c",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               fontWeight: 600,
@@ -91,7 +104,7 @@ export default async function GiftOgImage({ params }: Props) {
             style={{
               fontSize: 72,
               fontWeight: 800,
-              color: "#23B56E",
+              color: "#f97316",
               letterSpacing: "-2px",
               lineHeight: 1,
             }}

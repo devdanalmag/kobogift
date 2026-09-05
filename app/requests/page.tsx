@@ -78,13 +78,13 @@ function RequestCard({ req }: { req: PaymentRequestItem }) {
         expired
           ? "border-white/6 bg-white/3 opacity-50"
           : paid
-          ? "border-emerald-500/25 bg-emerald-950/20"
+          ? "border-orange-500/25 bg-orange-950/20"
           : "border-white/10 bg-white/5"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${paid ? "border-emerald-500/40 bg-emerald-950/60 text-emerald-400" : "border-white/15 bg-white/8 text-white/90"}`}>
+          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${paid ? "border-orange-500/40 bg-orange-950/60 text-orange-400" : "border-white/15 bg-white/8 text-white/90"}`}>
             {paid ? "✓" : displayNameInitials(req.displayName)}
           </div>
           <div className="min-w-0">
@@ -93,7 +93,7 @@ function RequestCard({ req }: { req: PaymentRequestItem }) {
           </div>
         </div>
         <div className="shrink-0 text-right">
-          <p className={`text-base font-bold ${paid ? "text-emerald-400" : "text-white/90"}`}>{req.amountUsdc}</p>
+          <p className={`text-base font-bold ${paid ? "text-orange-400" : "text-white/90"}`}>{req.amountUsdc}</p>
           <p className="text-xs text-white/40">USDC</p>
         </div>
       </div>
@@ -106,7 +106,7 @@ function RequestCard({ req }: { req: PaymentRequestItem }) {
 
       <div className="flex gap-2">
         {paid ? (
-          <span className="text-xs font-medium text-emerald-400">
+          <span className="text-xs font-medium text-orange-400">
             Paid ✓{req.paidAt ? ` · ${formatDate(req.paidAt)}` : ""}
           </span>
         ) : expired ? (

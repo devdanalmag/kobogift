@@ -52,7 +52,7 @@ export default function OgImage() {
             }}
           >
             <span style={{ color: "#ffffff" }}>Kobo</span>
-            <span style={{ color: "#10B981" }}>Gift</span>
+            <span style={{ color: "#f97316" }}>Gift</span>
           </div>
           <div
             style={{

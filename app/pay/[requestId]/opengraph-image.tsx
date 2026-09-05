@@ -52,15 +52,26 @@ export default async function PayOgImage({ params }: Props) {
             width: 200,
             height: 200,
             borderRadius: 56,
-            background: "linear-gradient(135deg, #23B56E22, #1c8f5822)",
-            border: "2px solid #23B56E44",
+            background: "#f97316",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
-            fontSize: 88,
           }}
         >
-          💸
+          <svg
+            width="96"
+            height="96"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect width="20" height="12" x="2" y="6" rx="2" />
+            <circle cx="12" cy="12" r="2" />
+            <path d="M6 12h.01M18 12h.01" />
+          </svg>
         </div>
 
         {/* Text */}
@@ -68,7 +79,7 @@ export default async function PayOgImage({ params }: Props) {
           <div
             style={{
               fontSize: 26,
-              color: "#34d399",
+              color: "#fb923c",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               fontWeight: 600,
@@ -93,7 +104,7 @@ export default async function PayOgImage({ params }: Props) {
             style={{
               fontSize: 80,
               fontWeight: 800,
-              color: "#23B56E",
+              color: "#f97316",
               letterSpacing: "-2px",
               lineHeight: 1,
             }}

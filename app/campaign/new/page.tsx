@@ -240,7 +240,7 @@ export default function NewCampaignPage() {
 
               <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/4 px-4 py-3">
                 <span className="text-sm text-white/50">Total · {count} gifts</span>
-                <span className="text-base font-bold text-emerald-400">{total} USDC</span>
+                <span className="text-base font-bold text-orange-400">{total} USDC</span>
               </div>
 
               {step === "error" && errorMsg && (
@@ -249,7 +249,7 @@ export default function NewCampaignPage() {
 
               {isProcessing && (
                 <div className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/4 px-4 py-3">
-                  <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-white/15 border-t-emerald-400" />
+                  <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-white/15 border-t-orange-400" />
                   <p className="text-sm text-white/70">{statusMsg}</p>
                 </div>
               )}

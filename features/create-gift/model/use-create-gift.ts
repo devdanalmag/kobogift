@@ -42,7 +42,7 @@ type ApiError = { error: string };
 
 type ContractChallengeResponse = {
   challengeId?: string | null;
-  alreadyApproved?: boolean;
+  step?: "approve" | "fund";
 };
 
 async function postCircleChallenge(
@@ -57,7 +57,7 @@ async function postCircleChallenge(
     error?: string;
     message?: string;
   };
-  if (!response.ok || (!data.challengeId && !data.alreadyApproved)) {
+  if (!response.ok || !data.challengeId) {
     const msg =
       typeof data.error === "string"
         ? data.error
@@ -247,7 +247,7 @@ export function useCreateGift() {
     const hash = generateHash(secret);
 
     try {
-      const challengeRes = await postCircleChallenge({
+      let challengeRes = await postCircleChallenge({
         action: "giftFundingBatchChallenge",
         userToken,
         walletId: primaryWalletId,
@@ -256,13 +256,40 @@ export function useCreateGift() {
         expiresInHours: hoursNum,
       });
 
-      if (challengeRes.challengeId) {
-        setStatus("Confirm in Circle: approve USDC for the gift…");
+      if (challengeRes.step === "approve" && challengeRes.challengeId) {
+        setStatus("Confirm in Circle: approve USDC for KoboGift…");
         await executeChallenge(challengeRes.challengeId);
-        setStatus("USDC approved. Creating your gift on Arc…");
-      } else {
-        setStatus("Creating your gift on Arc…");
+        setStatus("USDC approved! Preparing gift funding…");
+        await new Promise((r) => setTimeout(r, 2000));
+        challengeRes = await postCircleChallenge({
+          action: "giftFundingBatchChallenge",
+          userToken,
+          walletId: primaryWalletId,
+          paymentIdHash: hash,
+          amountUsdc: amount,
+          expiresInHours: hoursNum,
+        });
       }
+
+      if (!challengeRes.challengeId) {
+        throw new Error("Missing challengeId from Circle.");
+      }
+
+      setStatus("Confirm in Circle: fund the gift…");
+      await executeChallenge(challengeRes.challengeId);
+
+      setStatus("Waiting for Arc confirmation…");
+      await waitForClientFundedGift({
+        paymentIdHash: hash,
+        amountUsdc: amount,
+        refundAddress: senderWalletAddress,
+        maxAttempts: 45,
+        onProgress: (attempt, max, detail) => {
+          setStatus(
+            `Waiting for Arc confirmation… ${detail} · ${attempt}/${max}`
+          );
+        },
+      });
 
       const response = await fetch("/api/create-gift", {
         method: "POST",
@@ -275,6 +302,7 @@ export function useCreateGift() {
           senderDisplayName: trimmedName,
           giftMessage: trimmedMessage || undefined,
           senderEmail: googleEmail || undefined,
+          syncClientFunding: true,
         }),
       });
 

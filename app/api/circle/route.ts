@@ -496,19 +496,51 @@ export async function POST(request: Request) {
           console.warn("[createGift] balance pre-check skipped:", balanceErr);
         }
 
-        // If the wallet already has enough allowance for the gift contract,
-        // no approval challenge is needed!
-        if (currentAllowance >= amountRaw) {
-          return NextResponse.json({
-            alreadyApproved: true,
-            challengeId: null,
-          }, { status: 200 });
+        const expiresAt = BigInt(
+          Math.floor(Date.now() / 1000) + Math.floor(expiresInHours * 3600)
+        );
+
+        // If the wallet does not have enough allowance yet, request approval for the gift contract on the USDC token
+        if (currentAllowance < amountRaw) {
+          const MAX_UINT256 =
+            "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+
+          const response = await circleFetch(
+            `${CIRCLE_BASE_URL}/v1/w3s/user/transactions/contractExecution`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${CIRCLE_API_KEY}`,
+                "X-User-Token": userToken,
+                "X-Request-Id": crypto.randomUUID(),
+              },
+              body: JSON.stringify({
+                idempotencyKey: crypto.randomUUID(),
+                walletId,
+                contractAddress: getAddress(arc.usdcAddress),
+                abiFunctionSignature: "approve(address,uint256)",
+                abiParameters: [
+                  getAddress(arc.contractAddress),
+                  MAX_UINT256,
+                ],
+                feeLevel: "MEDIUM",
+              }),
+            }
+          );
+
+          const data = (await response.json()) as Record<string, unknown>;
+
+          if (!response.ok) {
+            const msg = typeof data.message === "string" ? data.message : `Request failed (${response.status})`;
+            return NextResponse.json({ error: msg }, { status: response.status });
+          }
+
+          const inner = data.data as { challengeId: string };
+          return NextResponse.json({ ...inner, step: "approve" }, { status: 200 });
         }
 
-        // Otherwise, request approval for the gift contract on the USDC token
-        const MAX_UINT256 =
-          "115792089237316195423570985008687907853269984665640564039457584007913129639935";
-
+        // Allowance is already sufficient! Request execution of fundGift directly from user's wallet
         const response = await circleFetch(
           `${CIRCLE_BASE_URL}/v1/w3s/user/transactions/contractExecution`,
           {
@@ -522,11 +554,14 @@ export async function POST(request: Request) {
             body: JSON.stringify({
               idempotencyKey: crypto.randomUUID(),
               walletId,
-              contractAddress: getAddress(arc.usdcAddress),
-              abiFunctionSignature: "approve(address,uint256)",
+              contractAddress: getAddress(arc.contractAddress),
+              abiFunctionSignature:
+                "fundGift(bytes32,uint256,address,uint64)",
               abiParameters: [
-                getAddress(arc.contractAddress),
-                MAX_UINT256,
+                paymentIdHash,
+                amountRaw.toString(),
+                getAddress(scaAddress),
+                expiresAt.toString(),
               ],
               feeLevel: "MEDIUM",
             }),
@@ -541,7 +576,7 @@ export async function POST(request: Request) {
         }
 
         const inner = data.data as { challengeId: string };
-        return NextResponse.json({ ...inner, alreadyApproved: false }, { status: 200 });
+        return NextResponse.json({ ...inner, step: "fund" }, { status: 200 });
       }
 
       case "sendEmailOtp": {

@@ -32,7 +32,7 @@ type PayStep = "idle" | "funding" | "claiming" | "success" | "error";
 
 type ContractChallengeResponse = {
   challengeId?: string | null;
-  alreadyApproved?: boolean;
+  step?: "approve" | "fund";
 };
 
 async function postCircleChallenge(
@@ -46,7 +46,7 @@ async function postCircleChallenge(
   const data = (await res.json()) as ContractChallengeResponse & {
     error?: string;
   };
-  if (!res.ok || (!data.challengeId && !data.alreadyApproved)) {
+  if (!res.ok || !data.challengeId) {
     throw new Error(data.error ?? `Circle API error (${res.status})`);
   }
   return data;
@@ -257,7 +257,7 @@ function PayContent({ request }: { request: RequestDetails }) {
       setStep("funding");
       setStatusMsg("Preparing transaction…");
 
-      const challengeRes = await postCircleChallenge({
+      let challengeRes = await postCircleChallenge({
         action: "giftFundingBatchChallenge",
         userToken,
         walletId: primaryWalletId,
@@ -266,13 +266,37 @@ function PayContent({ request }: { request: RequestDetails }) {
         expiresInHours: 24,
       });
 
-      if (challengeRes.challengeId) {
+      if (challengeRes.step === "approve" && challengeRes.challengeId) {
         setStatusMsg("Confirm in Circle: approve USDC…");
         await executeChallenge(challengeRes.challengeId);
-        setStatusMsg("Finalizing payment on Arc…");
-      } else {
-        setStatusMsg("Finalizing payment on Arc…");
+        setStatusMsg("USDC approved! Preparing payment…");
+        await new Promise((r) => setTimeout(r, 2000));
+        challengeRes = await postCircleChallenge({
+          action: "giftFundingBatchChallenge",
+          userToken,
+          walletId: primaryWalletId,
+          paymentIdHash: hash,
+          amountUsdc: request.amountUsdc,
+          expiresInHours: 24,
+        });
       }
+
+      if (!challengeRes.challengeId) {
+        throw new Error("Missing challengeId from Circle.");
+      }
+
+      setStatusMsg("Confirm in Circle: send payment…");
+      await executeChallenge(challengeRes.challengeId);
+
+      setStatusMsg("Waiting for Arc confirmation…");
+      await waitForClientFundedGift({
+        paymentIdHash: hash,
+        amountUsdc: request.amountUsdc,
+        refundAddress: walletAddress,
+        maxAttempts: 45,
+        onProgress: (_a, _m, detail) =>
+          setStatusMsg(`Waiting for Arc… ${detail}`),
+      });
 
       const createRes = await fetch("/api/create-gift", {
         method: "POST",
@@ -285,6 +309,7 @@ function PayContent({ request }: { request: RequestDetails }) {
           senderDisplayName: payerName,
           giftMessage: request.message || undefined,
           senderEmail: googleEmail || undefined,
+          syncClientFunding: true,
         }),
       });
       if (!createRes.ok) {

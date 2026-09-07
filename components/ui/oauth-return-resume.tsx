@@ -20,11 +20,12 @@ export default function OAuthReturnResume() {
   useEffect(() => {
     if (!ready || !authenticated || walletSyncing) return;
     const target = getOAuthReturnTarget();
-    if (!target) return;
-    const current = getCurrentAppPath();
     clearOAuthReturnTarget();
-    if (current !== target) {
-      router.push(target);
+    const current = getCurrentAppPath();
+    // Default to /wallet when no saved return target (e.g. signed in from landing page)
+    const destination = target || "/wallet";
+    if (current !== destination) {
+      router.push(destination);
     }
   }, [ready, authenticated, walletSyncing, router]);
 

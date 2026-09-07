@@ -30,8 +30,9 @@ function OAuthLoadingOverlay() {
     setHasTarget(getOAuthReturnTarget() !== null);
   }, [ready, walletSyncing, authenticated]);
 
-  // Only activate on the OAuth landing page ("/") when there's a pending redirect target
-  if (pathname !== "/" || !hasTarget) return null;
+  // Only activate on the OAuth landing page ("/") — overlay covers while wallet initialises
+  // and OAuthReturnResume navigates (to saved target or default /wallet)
+  if (pathname !== "/" || (!hasTarget && !walletSyncing)) return null;
   // Stop blocking if there's an error — let the user see it
   if (authError) return null;
   // Stop blocking once wallet is fully ready (OAuthReturnResume will navigate)

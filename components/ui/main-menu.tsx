@@ -96,6 +96,11 @@ export default function MainMenu({ className }: MainMenuProps) {
           {/* Home */}
           <MenuItem href="/" label="Home" desc="Landing page" onClick={() => setOpen(false)} />
 
+          {/* Account section — wallet & dashboard at top for quick access */}
+          <MenuDivider label="Account" />
+          <MenuItem href="/wallet" label="My wallet" desc="USDC balance and received gifts" onClick={() => setOpen(false)} />
+          <MenuItem href="/gifts" label="Dashboard" desc="All sent gifts — claimed / active / expired" onClick={() => setOpen(false)} />
+
           {/* Send section */}
           <MenuDivider label="Send" />
           <MenuItem href="/create" label="Gift" desc="One link → one recipient claims USDC" onClick={() => setOpen(false)} />
@@ -107,11 +112,6 @@ export default function MainMenu({ className }: MainMenuProps) {
           <MenuDivider label="Receive" />
           <MenuItem href="/request" label="Request payment" desc="Pay-me link — payer confirms once" onClick={() => setOpen(false)} />
           <MenuItem href="/requests" label="My requests" desc="History + paid / active status" onClick={() => setOpen(false)} />
-
-          {/* Account section */}
-          <MenuDivider label="Account" />
-          <MenuItem href="/wallet" label="My wallet" desc="USDC balance and received gifts" onClick={() => setOpen(false)} />
-          <MenuItem href="/gifts" label="Dashboard" desc="All sent gifts — claimed / active / expired" onClick={() => setOpen(false)} />
 
           {/* Footer */}
           <div className="mx-3 my-1.5 border-t border-[var(--border)]" />

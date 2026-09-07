@@ -7,6 +7,8 @@ import { sanitizeSenderDisplayName, sanitizeGiftMessage } from "@/lib/server/gif
 import { rateLimitedCheck } from "@/lib/server/simple-rate-limiter";
 import { HttpError } from "@/lib/server/http-errors";
 
+import { createGift } from "@/entities/gift/server/gift-service";
+
 export const runtime = "nodejs";
 
 const poolEntrySchema = z.object({
@@ -83,6 +85,19 @@ export async function POST(request: Request) {
   const campaignId = randomBytes(12).toString("hex");
 
   try {
+    await Promise.all(
+      gifts.map(({ paymentIdHash, amountUsdc }) =>
+        createGift({
+          paymentIdHash,
+          amountUsdc,
+          refundAddress: createdBy,
+          expiresInHours: 24 * 7,
+          senderDisplayName: cleanName,
+          giftMessage: cleanMessage,
+        })
+      )
+    );
+
     await campaignStore.create(
       {
         campaignId,

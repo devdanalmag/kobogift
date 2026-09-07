@@ -78,27 +78,23 @@ export default function NewCampaignPage() {
           expiresInHours: 24 * 7, // 7 days
         }),
       });
-      const circleData = (await circleRes.json()) as { challengeId?: string; error?: string };
-      if (!circleRes.ok || !circleData.challengeId) {
+      const circleData = (await circleRes.json()) as {
+        challengeId?: string;
+        alreadyApproved?: boolean;
+        error?: string;
+      };
+      if (!circleRes.ok || (!circleData.challengeId && !circleData.alreadyApproved)) {
         throw new Error(circleData.error ?? `Circle error (${circleRes.status})`);
       }
 
-      setStatusMsg("Confirm in Circle — fund all gifts in one step…");
-      await executeChallenge(circleData.challengeId);
-
-      // Wait for first gift on-chain (all in same tx)
-      setStep("confirming");
-      setStatusMsg(`Waiting for Arc confirmation…`);
-      await waitForClientFundedGift({
-        paymentIdHash: hashes[0],
-        amountUsdc: amount,
-        refundAddress: walletAddress,
-        onProgress: (_a, _m, detail) => setStatusMsg(`Waiting for Arc… ${detail}`),
-      });
+      if (circleData.challengeId) {
+        setStatusMsg("Confirm in Circle: approve USDC…");
+        await executeChallenge(circleData.challengeId);
+      }
 
       // Save campaign with secrets
       setStep("saving");
-      setStatusMsg("Creating campaign…");
+      setStatusMsg("Creating campaign and funding gifts on Arc…");
       const saveRes = await fetch("/api/create-campaign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

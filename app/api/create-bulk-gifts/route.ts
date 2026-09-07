@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { isAddress, isHexString } from "ethers";
-import { syncClientFundedGift } from "@/entities/gift/server/gift-service";
+import { createGift } from "@/entities/gift/server/gift-service";
 import { rateLimitedCheck } from "@/lib/server/simple-rate-limiter";
 import { sanitizeSenderDisplayName, sanitizeGiftMessage } from "@/lib/server/gift-metadata";
 import { HttpError } from "@/lib/server/http-errors";
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const results = await Promise.all(
     gifts.map(async ({ paymentIdHash, amountUsdc }) => {
       try {
-        const result = await syncClientFundedGift({
+        const result = await createGift({
           paymentIdHash,
           amountUsdc,
           refundAddress,

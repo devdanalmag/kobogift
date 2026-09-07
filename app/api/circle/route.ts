@@ -461,19 +461,28 @@ export async function POST(request: Request) {
           );
         }
 
+        const balanceProvider = new JsonRpcProvider(arc.rpcUrl, ARC_TESTNET.chainId);
+        const usdcRead = new Contract(
+          arc.usdcAddress,
+          [
+            "function balanceOf(address) view returns (uint256)",
+            "function allowance(address, address) view returns (uint256)",
+          ],
+          balanceProvider
+        );
+
+        let currentAllowance = BigInt(0);
         try {
-          const balanceProvider = new JsonRpcProvider(arc.rpcUrl, ARC_TESTNET.chainId);
-          const usdcRead = new Contract(
-            arc.usdcAddress,
-            ["function balanceOf(address) view returns (uint256)"],
-            balanceProvider
-          );
-          const balance = await Promise.race([
-            usdcRead.balanceOf(scaAddress) as Promise<bigint>,
+          const [balance, allowance] = await Promise.race([
+            Promise.all([
+              usdcRead.balanceOf(scaAddress) as Promise<bigint>,
+              usdcRead.allowance(scaAddress, arc.contractAddress) as Promise<bigint>,
+            ]),
             new Promise<never>((_, reject) =>
               setTimeout(() => reject(new Error("timeout")), 5_000)
             ),
           ]);
+          currentAllowance = allowance;
           if (balance < amountRaw) {
             const has = formatUnits(balance, 6);
             return NextResponse.json(
@@ -487,33 +496,18 @@ export async function POST(request: Request) {
           console.warn("[createGift] balance pre-check skipped:", balanceErr);
         }
 
-        const expiresAt = BigInt(
-          Math.floor(Date.now() / 1000) + Math.floor(expiresInHours * 3600)
-        );
+        // If the wallet already has enough allowance for the gift contract,
+        // no approval challenge is needed!
+        if (currentAllowance >= amountRaw) {
+          return NextResponse.json({
+            alreadyApproved: true,
+            challengeId: null,
+          }, { status: 200 });
+        }
 
-        const approveIface = new Interface(["function approve(address,uint256)"]);
-        const approveData = approveIface.encodeFunctionData("approve", [
-          getAddress(arc.contractAddress),
-          amountRaw,
-        ]);
-
-        const giftIface = new Interface([
-          "function fundGift(bytes32,uint256,address,uint64)",
-        ]);
-        const fundData = giftIface.encodeFunctionData("fundGift", [
-          paymentIdHash,
-          amountRaw,
-          getAddress(scaAddress),
-          expiresAt,
-        ]);
-
-        const usdcAddr = getAddress(arc.usdcAddress);
-        const giftAddr = getAddress(arc.contractAddress);
-
-        const batchParameter: [string, string, string][] = [
-          [usdcAddr, "0", approveData],
-          [giftAddr, "0", fundData],
-        ];
+        // Otherwise, request approval for the gift contract on the USDC token
+        const MAX_UINT256 =
+          "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
         const response = await circleFetch(
           `${CIRCLE_BASE_URL}/v1/w3s/user/transactions/contractExecution`,
@@ -528,10 +522,12 @@ export async function POST(request: Request) {
             body: JSON.stringify({
               idempotencyKey: crypto.randomUUID(),
               walletId,
-              contractAddress: getAddress(scaAddress),
-              abiFunctionSignature:
-                "executeBatch((address, uint256, bytes)[])",
-              abiParameters: [batchParameter],
+              contractAddress: getAddress(arc.usdcAddress),
+              abiFunctionSignature: "approve(address,uint256)",
+              abiParameters: [
+                getAddress(arc.contractAddress),
+                MAX_UINT256,
+              ],
               feeLevel: "MEDIUM",
             }),
           }
@@ -545,7 +541,7 @@ export async function POST(request: Request) {
         }
 
         const inner = data.data as { challengeId: string };
-        return NextResponse.json(inner, { status: 200 });
+        return NextResponse.json({ ...inner, alreadyApproved: false }, { status: 200 });
       }
 
       case "sendEmailOtp": {
@@ -696,13 +692,26 @@ export async function POST(request: Request) {
         }
 
         // Balance pre-check
+        const balanceProvider = new JsonRpcProvider(arc.rpcUrl, ARC_TESTNET.chainId);
+        const usdcRead = new Contract(
+          arc.usdcAddress,
+          [
+            "function balanceOf(address) view returns (uint256)",
+            "function allowance(address, address) view returns (uint256)",
+          ],
+          balanceProvider
+        );
+
+        let currentAllowance = BigInt(0);
         try {
-          const balanceProvider = new JsonRpcProvider(arc.rpcUrl, ARC_TESTNET.chainId);
-          const usdcRead = new Contract(arc.usdcAddress, ["function balanceOf(address) view returns (uint256)"], balanceProvider);
-          const balance = await Promise.race([
-            usdcRead.balanceOf(scaAddress) as Promise<bigint>,
+          const [balance, allowance] = await Promise.race([
+            Promise.all([
+              usdcRead.balanceOf(scaAddress) as Promise<bigint>,
+              usdcRead.allowance(scaAddress, arc.contractAddress) as Promise<bigint>,
+            ]),
             new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 5_000)),
           ]);
+          currentAllowance = allowance;
           if (balance < totalRaw) {
             const has = formatUnits(balance, 6);
             const needs = formatUnits(totalRaw, 6);
@@ -714,21 +723,15 @@ export async function POST(request: Request) {
           console.warn("[bulkGiftBatch] balance pre-check skipped:", balanceErr);
         }
 
-        const expiresAt = BigInt(Math.floor(Date.now() / 1000) + Math.floor(expiresInHours * 3600));
+        if (currentAllowance >= totalRaw) {
+          return NextResponse.json({
+            alreadyApproved: true,
+            challengeId: null,
+          }, { status: 200 });
+        }
 
-        // Build batch: [approve(total), fundGift×1, ..., fundGift×N]
-        const approveIface = new Interface(["function approve(address,uint256)"]);
-        const approveData = approveIface.encodeFunctionData("approve", [getAddress(arc.contractAddress), totalRaw]);
-
-        const giftIface = new Interface(["function fundGift(bytes32,uint256,address,uint64)"]);
-        const batchParameter: [string, string, string][] = [
-          [getAddress(arc.usdcAddress), "0", approveData],
-          ...giftItems.map(({ paymentIdHash, amountRaw }) => [
-            getAddress(arc.contractAddress),
-            "0",
-            giftIface.encodeFunctionData("fundGift", [paymentIdHash, amountRaw, getAddress(scaAddress!), expiresAt]),
-          ] as [string, string, string]),
-        ];
+        const MAX_UINT256 =
+          "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
         const bulkResponse = await circleFetch(
           `${CIRCLE_BASE_URL}/v1/w3s/user/transactions/contractExecution`,
@@ -743,9 +746,12 @@ export async function POST(request: Request) {
             body: JSON.stringify({
               idempotencyKey: crypto.randomUUID(),
               walletId,
-              contractAddress: getAddress(scaAddress),
-              abiFunctionSignature: "executeBatch((address, uint256, bytes)[])",
-              abiParameters: [batchParameter],
+              contractAddress: getAddress(arc.usdcAddress),
+              abiFunctionSignature: "approve(address,uint256)",
+              abiParameters: [
+                getAddress(arc.contractAddress),
+                MAX_UINT256,
+              ],
               feeLevel: "MEDIUM",
             }),
           }
@@ -757,7 +763,8 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: msg }, { status: bulkResponse.status });
         }
 
-        return NextResponse.json((bulkData.data as { challengeId: string }), { status: 200 });
+        const inner = bulkData.data as { challengeId: string };
+        return NextResponse.json({ ...inner, alreadyApproved: false }, { status: 200 });
       }
 
       default:

@@ -30,7 +30,10 @@ type ApiResponse = RequestDetails | { error: string };
 
 type PayStep = "idle" | "funding" | "claiming" | "success" | "error";
 
-type ContractChallengeResponse = { challengeId: string };
+type ContractChallengeResponse = {
+  challengeId?: string | null;
+  alreadyApproved?: boolean;
+};
 
 async function postCircleChallenge(
   body: Record<string, unknown>
@@ -43,10 +46,10 @@ async function postCircleChallenge(
   const data = (await res.json()) as ContractChallengeResponse & {
     error?: string;
   };
-  if (!res.ok || !data.challengeId) {
+  if (!res.ok || (!data.challengeId && !data.alreadyApproved)) {
     throw new Error(data.error ?? `Circle API error (${res.status})`);
   }
-  return { challengeId: data.challengeId };
+  return data;
 }
 
 // ─── Info modal ────────────────────────────────────────────────────────────
@@ -254,7 +257,7 @@ function PayContent({ request }: { request: RequestDetails }) {
       setStep("funding");
       setStatusMsg("Preparing transaction…");
 
-      const { challengeId } = await postCircleChallenge({
+      const challengeRes = await postCircleChallenge({
         action: "giftFundingBatchChallenge",
         userToken,
         walletId: primaryWalletId,
@@ -263,17 +266,13 @@ function PayContent({ request }: { request: RequestDetails }) {
         expiresInHours: 24,
       });
 
-      setStatusMsg("Confirm in Circle…");
-      await executeChallenge(challengeId);
-
-      setStatusMsg("Waiting for Arc confirmation…");
-      await waitForClientFundedGift({
-        paymentIdHash: hash,
-        amountUsdc: request.amountUsdc,
-        refundAddress: walletAddress,
-        onProgress: (_a, _m, detail) =>
-          setStatusMsg(`Waiting for Arc… ${detail}`),
-      });
+      if (challengeRes.challengeId) {
+        setStatusMsg("Confirm in Circle: approve USDC…");
+        await executeChallenge(challengeRes.challengeId);
+        setStatusMsg("Finalizing payment on Arc…");
+      } else {
+        setStatusMsg("Finalizing payment on Arc…");
+      }
 
       const createRes = await fetch("/api/create-gift", {
         method: "POST",
@@ -286,7 +285,6 @@ function PayContent({ request }: { request: RequestDetails }) {
           senderDisplayName: payerName,
           giftMessage: request.message || undefined,
           senderEmail: googleEmail || undefined,
-          syncClientFunding: true,
         }),
       });
       if (!createRes.ok) {

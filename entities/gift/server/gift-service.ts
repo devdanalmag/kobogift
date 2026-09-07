@@ -67,10 +67,15 @@ export async function createGift(input: CreateGiftInput) {
   const expiresAt = BigInt(
     Math.floor(Date.now() / 1000) + Math.floor(input.expiresInHours * 60 * 60)
   );
-  const allowance = (await usdc.allowance(
-    input.refundAddress,
-    contractAddress
-  )) as bigint;
+  let allowance = BigInt(0);
+  for (let i = 0; i < 20; i++) {
+    allowance = (await usdc.allowance(
+      input.refundAddress,
+      contractAddress
+    )) as bigint;
+    if (allowance >= amountRaw) break;
+    await new Promise((r) => setTimeout(r, 1000));
+  }
   if (allowance < amountRaw) {
     throw new HttpError(
       400,

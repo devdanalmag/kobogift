@@ -360,27 +360,23 @@ export default function BulkPage() {
           expiresInHours: 24,
         }),
       });
-      const circleData = (await circleRes.json()) as { challengeId?: string; error?: string };
-      if (!circleRes.ok || !circleData.challengeId) {
+      const circleData = (await circleRes.json()) as {
+        challengeId?: string;
+        alreadyApproved?: boolean;
+        error?: string;
+      };
+      if (!circleRes.ok || (!circleData.challengeId && !circleData.alreadyApproved)) {
         throw new Error(circleData.error ?? `Circle error (${circleRes.status})`);
       }
 
-      setStatusMsg("Confirm in Circle — approve & fund all gifts in one step…");
-      await executeChallenge(circleData.challengeId);
+      if (circleData.challengeId) {
+        setStatusMsg("Confirm in Circle: approve USDC…");
+        await executeChallenge(circleData.challengeId);
+      }
 
-      // 2. Wait for first gift to appear on-chain (all in same tx)
-      setStep("confirming");
-      setStatusMsg(`Waiting for Arc confirmation (${gifts.length} gifts)…`);
-      await waitForClientFundedGift({
-        paymentIdHash: hashes[0],
-        amountUsdc: giftList[0].amountUsdc,
-        refundAddress: walletAddress,
-        onProgress: (_a, _m, detail) => setStatusMsg(`Waiting for Arc… ${detail}`),
-      });
-
-      // 3. Register all gifts server-side
+      // 2. Register and fund all gifts server-side via relayer
       setStep("registering");
-      setStatusMsg("Recording gifts…");
+      setStatusMsg("Funding and recording gifts on Arc…");
       const syncRes = await fetch("/api/create-bulk-gifts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -40,7 +40,10 @@ type ReclaimGiftSuccess = {
 
 type ApiError = { error: string };
 
-type ContractChallengeResponse = { challengeId: string };
+type ContractChallengeResponse = {
+  challengeId?: string | null;
+  alreadyApproved?: boolean;
+};
 
 async function postCircleChallenge(
   body: Record<string, unknown>
@@ -54,7 +57,7 @@ async function postCircleChallenge(
     error?: string;
     message?: string;
   };
-  if (!response.ok || !data.challengeId) {
+  if (!response.ok || (!data.challengeId && !data.alreadyApproved)) {
     const msg =
       typeof data.error === "string"
         ? data.error
@@ -63,7 +66,7 @@ async function postCircleChallenge(
           : `Circle API error (${response.status})`;
     throw new Error(msg);
   }
-  return { challengeId: data.challengeId };
+  return data;
 }
 
 export function useCreateGift() {
@@ -244,7 +247,7 @@ export function useCreateGift() {
     const hash = generateHash(secret);
 
     try {
-      const { challengeId } = await postCircleChallenge({
+      const challengeRes = await postCircleChallenge({
         action: "giftFundingBatchChallenge",
         userToken,
         walletId: primaryWalletId,
@@ -253,20 +256,13 @@ export function useCreateGift() {
         expiresInHours: hoursNum,
       });
 
-      setStatus("Confirm in Circle: approve USDC and fund the gift in one step…");
-      await executeChallenge(challengeId);
-
-      setStatus("Waiting for Arc confirmation…");
-      await waitForClientFundedGift({
-        paymentIdHash: hash,
-        amountUsdc: amount,
-        refundAddress: senderWalletAddress,
-        onProgress: (attempt, max, detail) => {
-          setStatus(
-            `Waiting for Arc confirmation… ${detail} · ${attempt}/${max}`
-          );
-        },
-      });
+      if (challengeRes.challengeId) {
+        setStatus("Confirm in Circle: approve USDC for the gift…");
+        await executeChallenge(challengeRes.challengeId);
+        setStatus("USDC approved. Creating your gift on Arc…");
+      } else {
+        setStatus("Creating your gift on Arc…");
+      }
 
       const response = await fetch("/api/create-gift", {
         method: "POST",
@@ -279,7 +275,6 @@ export function useCreateGift() {
           senderDisplayName: trimmedName,
           giftMessage: trimmedMessage || undefined,
           senderEmail: googleEmail || undefined,
-          syncClientFunding: true,
         }),
       });
 

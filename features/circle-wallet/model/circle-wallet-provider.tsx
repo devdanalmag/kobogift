@@ -540,7 +540,7 @@ function CircleWalletInner({ children }: { children: ReactNode }) {
         throw new Error("Wallet is still loading. Try again in a moment.");
       }
       if (!deviceId) {
-        throw new Error("Missing device id.");
+        throw new Error("Missing device id. Reload the Page Please");
       }
 
       loginInFlightRef.current = true;
@@ -563,7 +563,7 @@ function CircleWalletInner({ children }: { children: ReactNode }) {
         } catch (err) {
           if (err instanceof Error && /smtp/i.test(err.message)) {
             throw new Error(
-              "Email code delivery requires SMTP configured in Circle Developer Console. Please use Google Sign In instead."
+              "Email code delivery failed. Please use Google Sign In instead."
             );
           }
           throw err;

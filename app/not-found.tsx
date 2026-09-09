@@ -1,7 +1,7 @@
 import Link from "next/link";
 import AppShell from "@/components/ui/app-shell";
 import GlassCard from "@/components/ui/glass-card";
-import LinkCashLogo from "@/components/ui/linkcash-logo";
+import LinkCashLogo from "@/components/ui/kobogift-logo";
 
 export default function NotFound() {
   return (

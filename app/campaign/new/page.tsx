@@ -152,7 +152,7 @@ export default function NewCampaignPage() {
             <div className="flex justify-center">
               <div className="rounded-xl bg-white p-3">
                 <QRCodeSVG value={campaignUrl} size={160} level="H"
-                  imageSettings={{ src: "/linkcash-icon-512.png", height: 28, width: 28, excavate: true }} />
+                  imageSettings={{ src: "/kobogift-icon-512.png", height: 28, width: 28, excavate: true }} />
               </div>
             </div>
 

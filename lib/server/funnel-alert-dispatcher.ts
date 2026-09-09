@@ -64,7 +64,7 @@ export async function dispatchFunnelAlerts(summary: FunnelSummary) {
   if (dueAlerts.length === 0) return;
 
   const text =
-    "LinkCash funnel alert:\n" +
+    "KoboGift funnel alert:\n" +
     dueAlerts.map((item) => `- ${item}`).join("\n") +
     `\n24h open=${summary.last24h.createOpen}, funded=${summary.last24h.giftFunded}, claimed=${summary.last24h.claimSuccess}`;
 

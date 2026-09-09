@@ -57,7 +57,7 @@ function RequestCard({ req }: { req: PaymentRequestItem }) {
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({
-          title: "Pay me via LinkCash",
+          title: "Pay me via KoboGift",
           text: `${req.displayName} is requesting ${req.amountUsdc} USDC`,
           url: link,
         });
@@ -74,13 +74,12 @@ function RequestCard({ req }: { req: PaymentRequestItem }) {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-xl border p-4 space-y-3 ${
-        expired
+      className={`rounded-xl border p-4 space-y-3 ${expired
           ? "border-white/6 bg-white/3 opacity-50"
           : paid
-          ? "border-orange-500/25 bg-orange-950/20"
-          : "border-white/10 bg-white/5"
-      }`}
+            ? "border-orange-500/25 bg-orange-950/20"
+            : "border-white/10 bg-white/5"
+        }`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">

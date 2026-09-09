@@ -3,7 +3,7 @@ import { getUpstashClient } from "./upstash-client";
 
 const EXPLORER_BASE = "https://testnet.arcscan.app/api/v2";
 const CONTRACT = "0x93fEF97173Af2Da909Fe83961421199B9dB17111";
-const CACHE_KEY = "linkcash:stats-explorer-v1";
+const CACHE_KEY = "kobogift:stats-explorer-v1";
 const CACHE_TTL = 5 * 60;
 
 export type OnChainStats = {

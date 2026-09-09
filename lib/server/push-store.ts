@@ -18,7 +18,7 @@ function mem(): Map<string, PushSubscriptionRecord[]> {
 }
 
 function key(walletAddress: string): string {
-  return `linkcash:push:${walletAddress.toLowerCase()}`;
+  return `kobogift:push:${walletAddress.toLowerCase()}`;
 }
 
 class PushStore {

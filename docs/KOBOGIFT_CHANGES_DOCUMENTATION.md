@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-This document provides a comprehensive technical and design record of the complete rebranding and UI overhaul of the platform from **LinkCash** to **KoboGift** under the new primary domain **`kobogift.xyz`**.
+This document provides a comprehensive technical and design record of the complete rebranding and UI overhaul of the platform from **KoboGift** to **KoboGift** under the new primary domain **`kobogift.xyz`**.
 
 The transformation elevates the platform into a premier next-generation crypto gifting and payment link protocol. The entire user interface, design system, system color palette, client/server storage keys, metadata, OpenGraph cards, PWA manifest, service workers, emails, and brand assets have been systematically upgraded.
 
@@ -30,7 +30,7 @@ The transformation elevates the platform into a premier next-generation crypto g
   - Features intersecting specular ribbon stripes, top gift bow ribbon loops, center sparkle glint, and an ambient glowing drop shadow (`rgba(16, 185, 129, 0.45)`).
 - **`components/ui/kobogift-logo.tsx`**:
   - Responsive brand wordmark component supporting icon-only and full logo layouts with custom letter-spacing (`-0.03em`) and high-contrast typography.
-- **`components/ui/linkcash-logo.tsx`**:
+- **`components/ui/kobogift-logo.tsx`**:
   - Preserved as a re-export compatibility wrapper ensuring zero breaking changes across any legacy imports.
 
 ---
@@ -66,7 +66,7 @@ The color palette was transitioned from a standard dark blue tech aesthetic to a
 
 ## 4. Domain & Route Hierarchy
 
-The entire codebase has been updated from `linkcash.app` to **`kobogift.xyz`**:
+The entire codebase has been updated from `kobogift.app` to **`kobogift.xyz`**:
 
 ```
 https://kobogift.xyz
@@ -195,7 +195,7 @@ https://kobogift.xyz
 | Test Area | Status | Notes |
 |---|---|---|
 | Unit & Integration Tests | **40 / 40 Passed** | Node test runner verified all 9 test suites |
-| Branding & Domain Grep | **0 Legacy References** | Verified complete eradication of `linkcash.app` |
+| Branding & Domain Grep | **0 Legacy References** | Verified complete eradication of `kobogift.app` |
 | Asset Delivery | **Verified** | Dynamic OpenGraph images, favicons, PWA icons |
 | Responsive Layouts | **Verified** | Optimized for mobile viewport and desktop screens |
 

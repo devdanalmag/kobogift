@@ -161,7 +161,7 @@ export async function syncClientFundedGift(input: CreateGiftInput) {
 
   // Acquire cross-instance Redis lock (prevents race across serverless instances).
   const upstash = getUpstashClient();
-  const lockKey = `linkcash:gift-sync-lock:${hashKey}`;
+  const lockKey = `kobogift:gift-sync-lock:${hashKey}`;
   if (upstash) {
     try {
       const acquired = await upstash.command<string | null>([

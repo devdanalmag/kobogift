@@ -43,11 +43,11 @@ function mem(): Map<string, MemEntry> {
 }
 
 const k = {
-  camp: (id: string) => `linkcash:camp:${id}`,
-  pool: (id: string) => `linkcash:camp:${id}:pool`,
-  claims: (id: string) => `linkcash:camp:${id}:claims`,
-  claimers: (id: string) => `linkcash:camp:${id}:claimers`,
-  byCreator: (addr: string) => `linkcash:camps-by:${addr.toLowerCase()}`,
+  camp: (id: string) => `kobogift:camp:${id}`,
+  pool: (id: string) => `kobogift:camp:${id}:pool`,
+  claims: (id: string) => `kobogift:camp:${id}:claims`,
+  claimers: (id: string) => `kobogift:camp:${id}:claimers`,
+  byCreator: (addr: string) => `kobogift:camps-by:${addr.toLowerCase()}`,
 };
 
 class CampaignStore {

@@ -18,7 +18,7 @@ function mem(): Map<string, IdentityRecord> {
 }
 
 function key(walletAddress: string): string {
-  return `linkcash:identity:${walletAddress.toLowerCase()}`;
+  return `kobogift:identity:${walletAddress.toLowerCase()}`;
 }
 
 class IdentityStore {

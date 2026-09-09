@@ -3,7 +3,7 @@ const STATIC = [
   "/",
   "/offline",
   "/kobogift-icon-512.png",
-  "/linkcash-icon-512.png",
+  "/kobogift-icon-512.png",
   "/manifest.webmanifest",
 ];
 
@@ -31,7 +31,7 @@ self.addEventListener("fetch", (e) => {
   if (url.pathname.startsWith("/api/")) return;
 
   // Cache-first for Next.js static assets (content-hashed, safe to cache forever)
-  if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/kobogift-icon") || url.pathname.startsWith("/linkcash-icon")) {
+  if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/kobogift-icon") || url.pathname.startsWith("/kobogift-icon")) {
     e.respondWith(
       caches.match(e.request).then((cached) =>
         cached ?? fetch(e.request).then((res) => {

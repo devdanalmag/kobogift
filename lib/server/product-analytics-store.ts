@@ -4,13 +4,13 @@ import { getUpstashClient } from "./upstash-client";
 
 export type ProductAnalyticsEvent = {
   event:
-    | "create_open"
-    | "gift_funded"
-    | "status_open"
-    | "claim_success"
-    | "wallet_open"
-    | "claim_error"
-    | "reclaim_click";
+  | "create_open"
+  | "gift_funded"
+  | "status_open"
+  | "claim_success"
+  | "wallet_open"
+  | "claim_error"
+  | "reclaim_click";
   timestamp: string;
   path?: string;
   paymentIdHash?: string;
@@ -23,7 +23,7 @@ export type ProductAnalyticsEvent = {
   detail?: string;
 };
 
-const REDIS_KEY = "linkcash:analytics";
+const REDIS_KEY = "kobogift:analytics";
 const MAX_EVENTS = 10_000;
 
 function resolveProductAnalyticsLogPath() {

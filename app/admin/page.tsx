@@ -284,7 +284,7 @@ export default function AdminPage() {
         <GlassCard className="space-y-4 p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="app-section-label">LinkCash Admin</p>
+              <p className="app-section-label">KoboGift Admin</p>
               <h1 className="app-heading mt-1 text-3xl">Dashboard</h1>
             </div>
             <div className="flex items-center gap-2">
@@ -330,11 +330,10 @@ export default function AdminPage() {
                       setTab(t);
                       if (t === "analytics" && !analyticsData) void loadAnalytics();
                     }}
-                    className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                      tab === t
+                    className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${tab === t
                         ? "bg-white/12 text-white"
                         : "text-white/50 hover:text-white/70"
-                    }`}
+                      }`}
                   >
                     {t === "operations" ? "Operations" : "Analytics"}
                   </button>
@@ -616,13 +615,12 @@ export default function AdminPage() {
                             className="flex items-center justify-between gap-2 rounded-lg border border-white/8 px-3 py-2 text-xs"
                           >
                             <span
-                              className={`font-medium ${
-                                item.kind === "claim_success"
+                              className={`font-medium ${item.kind === "claim_success"
                                   ? "text-sky-300"
                                   : item.kind === "gift_funded"
                                     ? "text-orange-300"
                                     : "text-amber-300"
-                              }`}
+                                }`}
                             >
                               {item.kind === "gift_funded"
                                 ? "Funded"

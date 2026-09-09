@@ -126,7 +126,7 @@ export async function POST(request: Request) {
       // Transient error — push slot back + release lock for retry
       const upstash = (await import("@/lib/server/upstash-client")).getUpstashClient();
       if (upstash) {
-        upstash.command(["LPUSH", `linkcash:camp:${campaignId}:pool`, JSON.stringify(poolEntry)]).catch(() => undefined);
+        upstash.command(["LPUSH", `kobogift:camp:${campaignId}:pool`, JSON.stringify(poolEntry)]).catch(() => undefined);
       }
       void releaseRateLimit(claimLockKey);
     }

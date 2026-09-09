@@ -6,7 +6,7 @@ export type LiveActivityEvent = {
   txHash: string;
 };
 
-const REDIS_KEY = "linkcash:live-activity";
+const REDIS_KEY = "kobogift:live-activity";
 const MAX_ENTRIES = 500;
 
 const globalState = globalThis as typeof globalThis & {

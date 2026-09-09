@@ -15,7 +15,7 @@ function memoryMap(): Map<string, GiftMetadata> {
 }
 
 function redisKey(paymentIdHash: string): string {
-  return `linkcash:gift-meta:${paymentIdHash.toLowerCase()}`;
+  return `kobogift:gift-meta:${paymentIdHash.toLowerCase()}`;
 }
 
 class GiftMetadataStore {

@@ -25,11 +25,11 @@ function memoryMap(): Map<string, PaymentRequest> {
 }
 
 function redisKey(requestId: string): string {
-  return `linkcash:request:${requestId}`;
+  return `kobogift:request:${requestId}`;
 }
 
 function walletIndexKey(walletAddress: string): string {
-  return `linkcash:wallet-requests:${walletAddress.toLowerCase()}`;
+  return `kobogift:wallet-requests:${walletAddress.toLowerCase()}`;
 }
 
 class RequestStore {

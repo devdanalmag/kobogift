@@ -148,7 +148,7 @@ export default function RequestPage() {
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({
-          title: "Pay me via LinkCash",
+          title: "Pay me via KoboGift",
           text: `${displayName} is requesting ${amount} USDC`,
           url: requestLink,
         });
@@ -193,7 +193,7 @@ export default function RequestPage() {
                   size={160}
                   level="H"
                   imageSettings={{
-                    src: "/linkcash-icon-512.png",
+                    src: "/kobogift-icon-512.png",
                     height: 28,
                     width: 28,
                     excavate: true,
@@ -312,11 +312,10 @@ export default function RequestPage() {
                       key={preset}
                       type="button"
                       onClick={() => setAmount(preset)}
-                      className={`rounded-lg border px-3 py-1.5 text-sm transition ${
-                        amount === preset
-                          ? "border-white/40 bg-white/15 text-white"
-                          : "border-white/12 bg-white/5 text-white/55 hover:border-white/25 hover:text-white/80"
-                      }`}
+                      className={`rounded-lg border px-3 py-1.5 text-sm transition ${amount === preset
+                        ? "border-white/40 bg-white/15 text-white"
+                        : "border-white/12 bg-white/5 text-white/55 hover:border-white/25 hover:text-white/80"
+                        }`}
                     >
                       ${preset}
                     </button>

@@ -103,7 +103,14 @@ export default function LoginPanel({
       </div>
 
       {(authError ?? emailError) ? (
-        <p className="text-center text-xs text-rose-400">{authError ?? emailError}</p>
+        <div className="rounded-lg border border-rose-500/30 bg-rose-950/30 p-2.5 text-center text-xs text-rose-300 space-y-1">
+          <p>{authError ?? emailError}</p>
+          {/smtp|verification code|email code/i.test(authError ?? emailError ?? "") && (
+            <p className="text-[11px] text-white/60">
+              💡 Tip: Google Sign-In is configured and creates your wallet instantly.
+            </p>
+          )}
+        </div>
       ) : null}
     </div>
   );

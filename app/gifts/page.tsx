@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { isAddress } from "ethers";
+import { Contract, JsonRpcProvider, isAddress } from "ethers";
+import {
+  getLocalSentGifts,
+  getLocalReceivedGifts,
+  updateLocalSentGift,
+} from "@/lib/client/gift-storage";
 import AppShell from "@/components/ui/app-shell";
 import GlassCard from "@/components/ui/glass-card";
 import MainMenu from "@/components/ui/main-menu";
@@ -137,6 +142,13 @@ function SenderDashboardContent() {
       setReceivedGifts([]);
       return;
     }
+
+    // 1. Immediately load local gifts so dashboard is instant and never flashes empty
+    const localSent = getLocalSentGifts(senderWalletAddress);
+    const localReceived = getLocalReceivedGifts(senderWalletAddress);
+    if (localSent.length > 0) setGifts(localSent as SenderGiftItem[]);
+    if (localReceived.length > 0) setReceivedGifts(localReceived as ReceivedGiftItem[]);
+
     setLoading(true);
     setError(null);
     try {
@@ -147,18 +159,77 @@ function SenderDashboardContent() {
       const sentData = (await sentRes.json()) as SenderGiftsResponse;
       const receivedData = (await receivedRes.json()) as ReceivedGiftsResponse;
 
-      if (sentData.ok) setGifts(sentData.gifts);
-      if (receivedData.ok) {
-        setReceivedGifts(receivedData.gifts);
-        if (receivedData.gifts.length > 0 && (!sentData.ok || sentData.gifts.length === 0)) {
-          setTab("received");
+      // Merge sent gifts (server + local)
+      const serverSent = sentData.ok ? sentData.gifts : [];
+      const sentMap = new Map<string, SenderGiftItem>();
+      for (const g of serverSent) {
+        sentMap.set(g.paymentIdHash.toLowerCase(), g);
+      }
+      for (const g of localSent) {
+        if (!sentMap.has(g.paymentIdHash.toLowerCase())) {
+          sentMap.set(g.paymentIdHash.toLowerCase(), g as SenderGiftItem);
         }
       }
+      const mergedSent = Array.from(sentMap.values());
 
-      const errs: string[] = [];
-      if (!sentRes.ok || !sentData.ok) errs.push(!sentData.ok ? sentData.error : "Failed to load sent gifts.");
-      if (!receivedRes.ok || !receivedData.ok) errs.push(!receivedData.ok ? receivedData.error : "Failed to load received gifts.");
-      if (errs.length) setError(errs.join(" "));
+      // Live verify on-chain status for gifts via direct eth_call (fast, never rate-limited)
+      try {
+        const provider = new JsonRpcProvider(ARC_TESTNET.rpcUrl);
+        const contract = new Contract(
+          ARC_TESTNET.giftContractAddress,
+          [
+            "function gifts(bytes32) view returns (uint256 amount,address refundAddress,uint64 expiresAt,bool claimed)",
+          ],
+          provider
+        );
+        const nowSec = Math.floor(Date.now() / 1000);
+        await Promise.all(
+          mergedSent.slice(0, 20).map(async (item) => {
+            if (item.status === "reclaimed") return;
+            try {
+              const onChain = (await contract.gifts(item.paymentIdHash)) as {
+                amount: bigint;
+                expiresAt: bigint;
+                claimed: boolean;
+              };
+              if (onChain.claimed) {
+                item.status = "claimed";
+                updateLocalSentGift(senderWalletAddress, item.paymentIdHash, {
+                  status: "claimed",
+                });
+              } else if (nowSec >= Number(onChain.expiresAt)) {
+                item.status = "expired";
+                updateLocalSentGift(senderWalletAddress, item.paymentIdHash, {
+                  status: "expired",
+                });
+              }
+            } catch {
+              // Ignore single item check error
+            }
+          })
+        );
+      } catch {
+        // Ignore provider check error
+      }
+      setGifts(mergedSent);
+
+      // Merge received gifts (server + local)
+      const serverReceived = receivedData.ok ? receivedData.gifts : [];
+      const receivedMap = new Map<string, ReceivedGiftItem>();
+      for (const r of serverReceived) {
+        receivedMap.set(r.paymentIdHash.toLowerCase(), r);
+      }
+      for (const r of localReceived) {
+        if (!receivedMap.has(r.paymentIdHash.toLowerCase())) {
+          receivedMap.set(r.paymentIdHash.toLowerCase(), r as ReceivedGiftItem);
+        }
+      }
+      const mergedReceived = Array.from(receivedMap.values());
+      setReceivedGifts(mergedReceived);
+
+      if (mergedReceived.length > 0 && mergedSent.length === 0) {
+        setTab("received");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load gifts.");
     } finally {

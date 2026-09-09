@@ -21,6 +21,7 @@ import {
   markAutoClaimAfterAuth,
 } from "@/lib/client/oauth-return";
 import { displayNameInitials } from "@/lib/client/google-display-name";
+import { saveLocalReceivedGift } from "@/lib/client/gift-storage";
 import {
   ARC_TESTNET,
   getPaymentIdHashFromPath,
@@ -88,8 +89,17 @@ function GiftClaimContent() {
     walletSyncing,
   } = useCircleWallet();
   const { claimGift, loading, txHash, error } = useGift();
-  const [hasSecret] = useState(() => Boolean(getSecretFromHash()));
   const [status, setStatus] = useState<string | null>(null);
+  const [hasSecret, setHasSecret] = useState(false);
+
+  useEffect(() => {
+    const updateSecret = () => {
+      setHasSecret(Boolean(getSecretFromHash()));
+    };
+    updateSecret();
+    window.addEventListener("hashchange", updateSecret);
+    return () => window.removeEventListener("hashchange", updateSecret);
+  }, []);
   const [giftAmountUsdc, setGiftAmountUsdc] = useState<string | null>(null);
   const [senderDisplayName, setSenderDisplayName] = useState<string | null>(
     null
@@ -216,6 +226,17 @@ function GiftClaimContent() {
       setSuccessTxHash(hash);
       setStatus("Success! Finalizing onchain receipt...");
 
+      if (receiverAddress && paymentIdHash) {
+        saveLocalReceivedGift(receiverAddress, {
+          paymentIdHash,
+          amountUsdc: giftAmountUsdc ?? "0",
+          txHash: hash,
+          senderDisplayName,
+          giftMessage,
+          claimedAt: new Date().toISOString(),
+        });
+      }
+
       if (successOverlayTimerRef.current) {
         window.clearTimeout(successOverlayTimerRef.current);
       }
@@ -224,7 +245,14 @@ function GiftClaimContent() {
         setIsSuccess(true);
       }, 2200);
     },
-    [claimCopyVariant, paymentIdHash]
+    [
+      claimCopyVariant,
+      giftAmountUsdc,
+      giftMessage,
+      paymentIdHash,
+      receiverAddress,
+      senderDisplayName,
+    ]
   );
 
   const runClaim = useCallback(async () => {
@@ -367,7 +395,7 @@ function GiftClaimContent() {
               {bootstrapError}
             </p>
           )}
-          {!giftLoading && !hasSecret && (
+          {!giftLoading && !hasSecret && !isSuccess && !loading && (
             <div className="rounded-xl border border-amber-500/30 bg-amber-950/30 px-4 py-3 text-sm text-amber-300 space-y-2">
               <p>This link is missing the claim secret — it looks like a status link, not the full gift link.</p>
               <p className="text-xs text-amber-400/80">Ask the sender to share the original gift link (it contains a <code>#</code> at the end).</p>

@@ -10,8 +10,8 @@ const GIFT_EVENTS_ABI = [
 ];
 
 /** Arc RPC allows ~10k blocks per eth_getLogs request. */
-const LOG_CHUNK_BLOCKS = 8_000;
-const MAX_CHUNKS = 20;
+const LOG_CHUNK_BLOCKS = 5_000;
+const MAX_CHUNKS = 3;
 const ENRICH_CANDIDATE_LIMIT = 40;
 
 type ScoredContractEvent = LandingTxExample & {

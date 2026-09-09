@@ -3,7 +3,7 @@ import path from "node:path";
 import { liveActivityStore } from "./live-activity-store";
 
 export type SenderGiftEvent = {
-  event: "gift_funded" | "gift_reclaimed";
+  event: "gift_funded" | "gift_reclaimed" | "gift_claimed";
   timestamp: string;
   paymentIdHash: string;
   refundAddress: string;
@@ -40,8 +40,11 @@ class SenderGiftStore {
   async write(event: SenderGiftEvent) {
     const record = JSON.stringify(event) + "\n";
 
+    const kind: "gift_funded" | "gift_reclaimed" | "claim_success" =
+      event.event === "gift_claimed" ? "claim_success" : event.event;
+
     void liveActivityStore.append({
-      kind: event.event,
+      kind,
       timestamp: event.timestamp,
       txHash: event.txHash,
     });

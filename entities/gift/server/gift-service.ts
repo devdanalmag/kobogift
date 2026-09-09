@@ -448,8 +448,8 @@ export async function getSenderGifts(input: SenderGiftsInput) {
     const latestBlock = await provider.getBlockNumber();
     const filter = eventContract.filters.GiftFunded(null, null, input.senderAddress);
 
-    const LOG_CHUNK = 9_000;
-    const MAX_CHUNKS = 30;
+    const LOG_CHUNK = 5_000;
+    const MAX_CHUNKS = 5;
 
     async function fetchFallbackLogs(): Promise<EventLog[]> {
       const logs: EventLog[] = [];
@@ -544,19 +544,47 @@ const GIFT_CLAIMED_ABI = [
 ];
 
 export async function getReceivedGifts(input: ReceiverGiftsInput) {
-  const { rpcUrl, contractAddress } = getArcReadEnv();
-  const provider = await createArcProviderWithContractCheck(rpcUrl, contractAddress);
-  const contract = new Contract(contractAddress, GIFT_CLAIMED_ABI, provider);
+  const normalizedReceiver = input.receiverAddress.toLowerCase();
+  const events = await senderGiftStore.readRecent(1000);
+  const claimedEvents = events
+    .filter(
+      (e) =>
+        e.event === "gift_claimed" &&
+        e.refundAddress.toLowerCase() === normalizedReceiver
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
 
-  let logs: EventLog[];
+  if (claimedEvents.length > 0) {
+    const gifts = await Promise.all(
+      claimedEvents.map(async (entry) => {
+        const metadata = await giftMetadataStore.get(entry.paymentIdHash);
+        return {
+          paymentIdHash: entry.paymentIdHash,
+          amountUsdc: metadata?.amountUsdc ?? "—",
+          txHash: entry.txHash,
+          senderDisplayName: metadata?.senderDisplayName ?? null,
+          giftMessage: metadata?.giftMessage ?? null,
+          claimedAt: entry.timestamp,
+        };
+      })
+    );
+    return { ok: true as const, gifts };
+  }
+
+  const { rpcUrl, contractAddress } = getArcReadEnv();
+  let logs: EventLog[] = [];
   try {
+    const provider = await createArcProviderWithContractCheck(rpcUrl, contractAddress);
+    const contract = new Contract(contractAddress, GIFT_CLAIMED_ABI, provider);
     const latestBlock = await provider.getBlockNumber();
     const filter = contract.filters.GiftClaimed(null, input.receiverAddress);
 
-    const LOG_CHUNK = 9_000;
-    const MAX_CHUNKS = 80;
+    const LOG_CHUNK = 5_000;
+    const MAX_CHUNKS = 5;
     let toBlock = latestBlock;
-    logs = [];
 
     for (let i = 0; i < MAX_CHUNKS && toBlock >= 0; i++) {
       const fromBlock = Math.max(0, toBlock - LOG_CHUNK);
@@ -567,7 +595,8 @@ export async function getReceivedGifts(input: ReceiverGiftsInput) {
       if (fromBlock === 0) break;
       toBlock = fromBlock - 1;
     }
-  } catch {
+  } catch (err) {
+    console.warn("[getReceivedGifts] log query skipped or rate-limited:", err);
     return { ok: true as const, gifts: [] };
   }
 

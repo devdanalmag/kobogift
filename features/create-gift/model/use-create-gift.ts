@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCircleWallet } from "@/features/circle-wallet/model/circle-wallet-provider";
 import {
   GIFT_MESSAGE_MAX,
@@ -18,9 +18,12 @@ import {
   generateLink,
   generateSecret,
   generateStatusLink,
+  ARC_TESTNET,
 } from "@/utils";
 import { formatGiftTxError } from "../lib/gift-errors";
 import { buildShareLinks } from "./share-links";
+import { Contract, JsonRpcProvider, formatUnits, isAddress } from "ethers";
+import { saveLocalSentGift } from "@/lib/client/gift-storage";
 import { trackEvent } from "@/lib/client/analytics";
 import { getOrAssignVariant } from "@/lib/client/experiments";
 import { toast } from "@/lib/client/toast";
@@ -134,6 +137,57 @@ export function useCreateGift() {
     [paymentIdHash]
   );
 
+  const [fundingStep, setFundingStep] = useState<
+    "idle" | "approve" | "fund" | "confirming"
+  >("idle");
+  const [balance, setBalance] = useState<string | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(false);
+
+  const walletAddressResolved = useMemo(
+    () =>
+      senderWalletAddress && isAddress(senderWalletAddress)
+        ? senderWalletAddress
+        : null,
+    [senderWalletAddress]
+  );
+
+  const loadBalance = useCallback(async () => {
+    if (!walletAddressResolved) {
+      setBalance(null);
+      return;
+    }
+    setLoadingBalance(true);
+    try {
+      const provider = new JsonRpcProvider(ARC_TESTNET.rpcUrl);
+      const usdc = new Contract(
+        ARC_TESTNET.usdcErc20Address,
+        [
+          "function balanceOf(address) view returns (uint256)",
+          "function decimals() view returns (uint8)",
+        ],
+        provider
+      );
+      const [rawBalance, decimals] = await Promise.race([
+        Promise.all([
+          usdc.balanceOf(walletAddressResolved) as Promise<bigint>,
+          usdc.decimals() as Promise<number>,
+        ]),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("timeout")), 8000)
+        ),
+      ]);
+      setBalance(formatUnits(rawBalance, decimals));
+    } catch {
+      // Ignore background balance error
+    } finally {
+      setLoadingBalance(false);
+    }
+  }, [walletAddressResolved]);
+
+  useEffect(() => {
+    void loadBalance();
+  }, [loadBalance]);
+
   useEffect(() => {
     trackEvent({
       event: "create_open",
@@ -242,6 +296,7 @@ export function useCreateGift() {
 
     setCreating(true);
     setStatus(null);
+    setFundingStep("idle");
 
     const secret = generateSecret();
     const hash = generateHash(secret);
@@ -257,9 +312,10 @@ export function useCreateGift() {
       });
 
       if (challengeRes.step === "approve" && challengeRes.challengeId) {
-        setStatus("Confirm in Circle: approve USDC for KoboGift…");
+        setFundingStep("approve");
+        setStatus("Step 1 of 2: Confirm USDC allowance in Circle popup (Contract Interaction)…");
         await executeChallenge(challengeRes.challengeId);
-        setStatus("USDC approved! Preparing gift funding…");
+        setStatus("USDC approved! Preparing gift deposit…");
         await new Promise((r) => setTimeout(r, 2000));
         challengeRes = await postCircleChallenge({
           action: "giftFundingBatchChallenge",
@@ -275,9 +331,11 @@ export function useCreateGift() {
         throw new Error("Missing challengeId from Circle.");
       }
 
-      setStatus("Confirm in Circle: fund the gift…");
+      setFundingStep("fund");
+      setStatus("Step 2 of 2: Confirm gift deposit in Circle popup (Contract Interaction)…");
       await executeChallenge(challengeRes.challengeId);
 
+      setFundingStep("confirming");
       setStatus("Waiting for Arc confirmation…");
       await waitForClientFundedGift({
         paymentIdHash: hash,
@@ -311,6 +369,19 @@ export function useCreateGift() {
         throw new Error("error" in data ? data.error : "Failed to record gift.");
       }
 
+      saveLocalSentGift(senderWalletAddress, {
+        paymentIdHash: hash,
+        status: "active",
+        amountUsdc: amount,
+        refundAddress: senderWalletAddress,
+        expiresAt: data.expiresAt,
+        createdAt: new Date().toISOString(),
+        fundedTxHash: data.txHash,
+        senderDisplayName: trimmedName,
+        giftMessage: trimmedMessage || undefined,
+      });
+      void loadBalance();
+
       const giftLink = generateLink(hash, secret);
       setPaymentIdHash(hash);
       setGiftExpiresAt(data.expiresAt);
@@ -334,6 +405,7 @@ export function useCreateGift() {
     } finally {
       creatingRef.current = false;
       setCreating(false);
+      setFundingStep("idle");
     }
   };
 
@@ -431,6 +503,10 @@ export function useCreateGift() {
     onCopy,
     onShareClick,
     giftLinkModalOpen,
+    fundingStep,
+    balance,
+    loadingBalance,
+    loadBalance,
     openGiftLinkModal: () => setGiftLinkModalOpen(true),
     closeGiftLinkModal: () => setGiftLinkModalOpen(false),
   };

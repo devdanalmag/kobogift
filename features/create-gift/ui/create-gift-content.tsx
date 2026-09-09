@@ -53,6 +53,9 @@ export function CreateGiftContent() {
     giftLinkModalOpen,
     openGiftLinkModal,
     closeGiftLinkModal,
+    fundingStep,
+    balance,
+    loadingBalance,
   } = useCreateGift();
 
   return (
@@ -144,9 +147,34 @@ export function CreateGiftContent() {
               transition={{ ...FIELD_TRANSITION, delay: 0.1 }}
               className="app-panel app-field p-4 text-left"
             >
-              <label htmlFor="amount" className="app-section-label">
-                Gift amount (USDC)
-              </label>
+              <div className="mb-2 flex items-center justify-between">
+                <label htmlFor="amount" className="app-section-label !mb-0">
+                  Gift amount (USDC)
+                </label>
+                {authenticated && (
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span className="text-white/45">Balance:</span>
+                    <span className="font-semibold text-white/90">
+                      {loadingBalance ? (
+                        <span className="animate-pulse">Loading…</span>
+                      ) : balance !== null ? (
+                        `${Number(balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
+                      ) : (
+                        "—"
+                      )}
+                    </span>
+                    {balance && Number(balance) > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => setAmount(Number(balance).toFixed(2))}
+                        className="ml-1 rounded px-1.5 py-0.5 text-[10px] font-medium bg-white/10 text-white/80 hover:bg-white/20 transition"
+                      >
+                        Use max
+                      </button>
+                    ) : null}
+                  </div>
+                )}
+              </div>
               <div className="mb-2 flex gap-2">
                 {["5", "10", "25", "50"].map((preset) => (
                   <button
@@ -272,11 +300,43 @@ export function CreateGiftContent() {
                 the app can build the onchain gift funding batch.
               </p>
             )}
-            {hasGiftContractConfig && (
-              <p className="rounded-xl border border-white/10 bg-black/25 p-3 text-left text-xs text-white/75">
-                One Circle confirmation approves USDC for the gift contract and
-                funds the gift on Arc in a single batch (SCA wallet).
-              </p>
+            {hasGiftContractConfig && !creating && (
+              <div className="rounded-xl border border-white/10 bg-black/25 p-3 text-left text-xs text-white/75 space-y-1">
+                <p className="font-medium text-white/90">Confirmation info:</p>
+                <p>
+                  First-time gift requires <strong>two confirmations</strong> in the Circle popup (1: Approve USDC allowance, 2: Deposit gift). Future gifts require only one confirmation.
+                </p>
+                <p className="text-[11px] text-white/45">
+                  Both popups will show as &quot;Contract Interaction&quot; in Circle.
+                </p>
+              </div>
+            )}
+            {creating && (
+              <div className="rounded-xl border border-orange-500/40 bg-orange-950/30 p-3.5 text-left text-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-orange-300">
+                    {fundingStep === "approve"
+                      ? "Step 1 of 2: Approve USDC Allowance"
+                      : fundingStep === "fund"
+                        ? "Step 2 of 2: Fund & Lock Gift"
+                        : fundingStep === "confirming"
+                          ? "Finalizing on Arc Network…"
+                          : "Preparing Transaction…"}
+                  </span>
+                  <span className="text-[10px] rounded-full bg-orange-500/20 px-2 py-0.5 text-orange-200">
+                    {fundingStep === "approve" ? "1 / 2" : fundingStep === "fund" ? "2 / 2" : "Confirming"}
+                  </span>
+                </div>
+                <p className="text-white/80">
+                  {fundingStep === "approve"
+                    ? "Please confirm in the Circle popup to allow KoboGift to transfer your gift amount. (Circle displays 'Contract Interaction')"
+                    : fundingStep === "fund"
+                      ? "Please confirm in the Circle popup to lock your USDC in the smart contract. (Circle displays 'Contract Interaction')"
+                      : fundingStep === "confirming"
+                        ? "Waiting for block confirmation on Arc Testnet. This usually takes a few seconds…"
+                        : "Setting up transaction parameters…"}
+                </p>
+              </div>
             )}
             <motion.button
               type="button"

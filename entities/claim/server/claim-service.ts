@@ -6,6 +6,7 @@ import { claimAuditStore } from "@/lib/server/claim-audit-store";
 import { getClaimRuntimeConfig } from "@/lib/server/claim-config-store";
 import { claimStateStore } from "@/lib/server/claim-state-store";
 import { HttpError } from "@/lib/server/http-errors";
+import { senderGiftStore } from "@/lib/server/sender-gift-store";
 import type { ClaimInput } from "./claim-validation";
 
 type ClaimSuccessResponse = {
@@ -150,6 +151,13 @@ export async function submitClaim(params: {
       idempotencyKey: idempotencyKey.slice(0, 10),
       paymentIdHash: input.paymentIdHash,
       receiverAddress: input.receiverAddress,
+      txHash,
+    });
+    await senderGiftStore.write({
+      event: "gift_claimed",
+      timestamp: new Date().toISOString(),
+      paymentIdHash: input.paymentIdHash,
+      refundAddress: input.receiverAddress.toLowerCase(),
       txHash,
     });
 

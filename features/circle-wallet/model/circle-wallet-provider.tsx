@@ -563,7 +563,7 @@ function CircleWalletInner({ children }: { children: ReactNode }) {
         } catch (err) {
           if (err instanceof Error && /smtp/i.test(err.message)) {
             throw new Error(
-              "Unable to send verification code. Please Try Google Sign In instead."
+              "Email code delivery requires SMTP configured in Circle Developer Console. Please use Google Sign In instead."
             );
           }
           throw err;

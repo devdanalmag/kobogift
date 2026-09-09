@@ -20,6 +20,7 @@ import CursorGlow from "./cursor-glow";
 import FloatingCoins from "./floating-coins";
 import MagneticLink from "./magnetic-link";
 import Reveal from "./reveal";
+import TeamSection from "./team-section";
 
 export type { LandingTxExample };
 
@@ -58,6 +59,9 @@ export default function LandingPage({ txExamples, stats }: LandingPageProps) {
           </a>
           <a href="#roadmap" className="landing-btn-ghost">
             Roadmap
+          </a>
+          <a href="#team" className="landing-btn-ghost">
+            Team
           </a>
           <Link href="/request" className="landing-btn-ghost request-link">
             Request →
@@ -315,6 +319,9 @@ export default function LandingPage({ txExamples, stats }: LandingPageProps) {
       {/* Interactive FAQ Accordion */}
       {/* <LandingFaq /> */}
 
+      {/* Team & Contributors Section */}
+      <TeamSection />
+
       {/* High-Impact Magnetic Bottom CTA Banner */}
       <section className="landing-section landing-cta-section">
         <div className="landing-container">
@@ -358,6 +365,17 @@ export default function LandingPage({ txExamples, stats }: LandingPageProps) {
           </span>
         </div>
         <div className="landing-footer-links">
+          <a href="#team" className="landing-footer-link">
+            Team
+          </a>
+          <a
+            href="https://x.com/kobogift"
+            className="landing-footer-link"
+            target="_blank"
+            rel="noreferrer"
+          >
+            X (@kobogift)
+          </a>
           <Link href="/gifts" className="landing-footer-link">
             My Gifts
           </Link>
